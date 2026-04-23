@@ -1,144 +1,370 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Galaxia BerMatCode — para ti</title>
-  <meta name="description" content="Galaxia interactiva de frases de cariño 💘">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hello Kitty Yorchi - Personalizado</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Georgia, serif}
-    #galaxy-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    #tap-instruction {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(18px, 4vw, 28px);
-      font-weight: 600;
-      color: #fff;
-      text-align: center;
-      padding: 20px 30px;
-      background: linear-gradient(135deg, rgba(25,25,55,0.85), rgba(15,15,35,0.9));
-      border: 2px solid rgba(255,215,0,0.6);
-      border-radius: 16px;
-      text-shadow: 0 0 6px #FFD700, 0 0 12px #FFA500, 0 0 20px #4169E1;
-      letter-spacing: 1.5px;
-      z-index: 1000;
-      pointer-events: none;
-      animation: pulseGlow 2s ease-in-out infinite, floatText 3s ease-in-out infinite;
-      white-space: nowrap;
+    body {
+      font-family: 'Dancing Script', cursive;
+      background: url('https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello%20kitty%20Fondo.jpg') center/cover no-repeat fixed;
+      height: 100vh; overflow-x: hidden; position: relative; color: white;
+      touch-action: manipulation;
     }
-    #tap-instruction.hidden {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.95);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      pointer-events: none;
+    body::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: inherit; filter: blur(2px) brightness(0.9); z-index: -2;
     }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 15px rgba(255,215,0,0.4), 0 0 30px rgba(65,105,225,0.3); border-color: rgba(255,215,0,0.6); }
-      50% { box-shadow: 0 0 25px rgba(255,215,0,0.8), 0 0 50px rgba(65,105,225,0.6); border-color: rgba(255,215,0,0.95); }
+
+    /* === ☰ Menú === */
+    #menu-btn {
+      position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+      cursor: pointer; z-index: 1000; background: rgba(0,0,0,0.3); border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); transition: 0.3s;
     }
-    @keyframes floatText {
-      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-      50% { transform: translate(-50%, -50%) translateY(-8px); }
+    #menu-btn:hover { background: rgba(255,20,147,0.4); }
+    #menu-btn span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
+    #menu-btn.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    #menu-btn.active span:nth-child(2) { opacity: 0; }
+    #menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    #menu-panel {
+      position: fixed; top: 0; right: -300px; width: 260px; height: 100vh;
+      background: #ffffff; color: #333; padding: 70px 20px 20px; z-index: 999;
+      box-shadow: -5px 0 20px rgba(0,0,0,0.3); transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+      font-family: 'Roboto', sans-serif;
+    }
+    #menu-panel.active { right: 0; }
+    
+    #menu-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 998; display: none; transition: opacity 0.3s;
+    }
+    #menu-overlay.active { display: block; }
+
+    .menu-title {
+      font-size: 1.2rem; font-weight: 700; color: #ff1493;
+      border-bottom: 2px solid #ff69b4; padding-bottom: 12px; margin-bottom: 15px; text-align: center;
+    }
+    .menu-item {
+      font-size: 0.9rem; padding: 10px 15px; margin: 4px 0; border-radius: 8px;
+      background: #fff0f5; display: flex; align-items: center; gap: 10px;
+      color: #555; font-weight: 500;
+    }
+    .menu-item i { color: #ff69b4; font-size: 1rem; width: 24px; text-align: center; }
+    .dev-info {
+      font-size: 0.85rem; color: #777; text-align: center; margin-top: 20px;
+      padding-top: 15px; border-top: 1px dashed #ffb6c1;
+    }
+    .dev-info strong { color: #ff1493; }
+
+    /* === 🔋 Batería === */
+    #battery-indicator {
+      position: absolute; top: 15px; left: 15px; display: flex; align-items: center; gap: 6px;
+      background: rgba(0, 0, 0, 0.35); padding: 5px 10px; border-radius: 20px;
+      font-family: 'Roboto Mono', monospace; font-size: 0.75rem; z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.15); pointer-events: none;
+    }
+    .battery-icon { position: relative; width: 18px; height: 10px; border: 1.5px solid #fff; border-radius: 2px; display: flex; align-items: center; padding: 1px; }
+    .battery-icon::after { content: ''; position: absolute; right: -3px; width: 2px; height: 4px; background: #fff; border-radius: 0 2px 2px 0; }
+    .battery-level { height: 100%; background: #4ade80; border-radius: 1px; transition: width 0.3s ease; }
+    .battery-level.low { background: #f87171; } .battery-level.medium { background: #fbbf24; }
+    .charging-icon { font-size: 0.8rem; color: #fbbf24; display: none; }
+    .charging-icon.active { display: inline-block; animation: pulse 0.6s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.9);} }
+
+    /* === 💌 Panel de Personalización === */
+    #custom-panel {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px;
+    }
+    #custom-panel.hidden { display: none; }
+    
+    .custom-box {
+      background: linear-gradient(135deg, #fff0f5, #ffe6f2);
+      border-radius: 20px; padding: 25px; width: 100%; max-width: 520px;
+      box-shadow: 0 10px 40px rgba(255,105,180,0.4);
+      border: 2px solid #ff69b4; color: #333;
+      font-family: 'Roboto', sans-serif; max-height: 95vh; overflow-y: auto;
+    }
+    .custom-title {
+      font-size: 1.5rem; font-weight: 700; color: #ff1493;
+      text-align: center; margin-bottom: 20px; font-family: 'Pacifico', cursive;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block; font-weight: 500; margin-bottom: 5px; color: #555;
+      font-size: 0.95rem;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 10px 12px; border: 2px solid #ffb6c1;
+      border-radius: 10px; font-size: 0.95rem; background: #fff;
+      font-family: 'Roboto', sans-serif; transition: 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: #ff1493; box-shadow: 0 0 0 3px rgba(255,20,147,0.2);
+    }
+    .form-group textarea { min-height: 130px; resize: vertical; }
+    .form-hint {
+      font-size: 0.8rem; color: #888; margin-top: 4px; display: block;
     }
     
-    .credits {
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Georgia', serif;
-      font-size: 10px;
-      color: #fff;
-      letter-spacing: 1.2px;
-      opacity: 0.9;
-      pointer-events: none;
-      text-shadow: 0 0 1px #fff, 0 0 3px #fff, 0 0 6px #FFD700, 0 0 10px #FFA500, 0 0 18px #FF69B4, 0 0 30px #FF4500;
-      z-index: 100;
+    .image-inputs { display: flex; flex-direction: column; gap: 8px; }
+    .image-inputs input { font-size: 0.85rem; padding: 8px 10px; }
+    
+    .music-input { margin-bottom: 15px; }
+    .music-input input { font-size: 0.9rem; }
+    
+    .btn {
+      width: 100%; padding: 12px; background: linear-gradient(135deg, #ff1493, #ff69b4);
+      color: white; border: none; border-radius: 12px; font-size: 1.05rem;
+      font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 5px;
+      font-family: 'Roboto', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .error{position:fixed;inset:auto 10px 70px 10px;background:#261a00;color:#fff4d9;border:1px solid #ffb347;border-radius:10px;padding:10px;font:12px Georgia, serif;display:none;z-index:10000;}
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,20,147,0.5); }
+    .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
     
     .loading {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 2000;
-      color: #fff;
-      font-family: Georgia, serif;
+      text-align: center; padding: 20px; color: #ff1493; font-weight: 500;
     }
-    .loading.hidden { display: none; }
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(255,215,0,0.3);
-      border-top-color: #FFD700;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
     
-    .error-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(38, 26, 0, 0.95);
-      border: 2px solid #ef4444;
-      border-radius: 16px;
-      padding: 30px;
-      max-width: 90%;
-      width: 400px;
-      text-align: center;
-      z-index: 3000;
-      display: none;
+    /* === ✅ Ventana de Éxito === */
+    .success-modal {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      border: 2px solid #28a745; border-radius: 16px;
+      padding: 20px; text-align: center; color: #155724;
+      margin-top: 15px; animation: slideUp 0.3s ease;
     }
-    .error-message.show { display: block; }
-    .error-message h3 { color: #ef4444; margin-top: 0; }
-    .error-message button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #6366f1;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .success-modal i { font-size: 2.5rem; color: #28a745; margin-bottom: 10px; }
+    .success-modal p { font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px; }
+    .success-modal strong { color: #ff1493; }
+    
+    .share-url-box {
+      background: #fff; padding: 10px; border-radius: 8px;
+      margin: 10px 0; word-break: break-all; font-size: 0.85rem;
+      border: 1px dashed #28a745; text-align: left;
+    }
+    
+    .action-buttons {
+      display: flex; flex-direction: column; gap: 8px; margin-top: 15px;
+    }
+    
+    .copy-btn {
+      background: #6c757d; color: white; border: none; padding: 10px;
+      border-radius: 10px; cursor: pointer; font-size: 0.95rem;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: 0.2s;
+    }
+    .copy-btn:hover { background: #5a6268; }
+    
+    .view-btn {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white; border: none; padding: 12px; border-radius: 10px;
+      cursor: pointer; font-size: 1rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: 0.3s;
+    }
+    .view-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(40,167,69,0.4); }
+
+    /* === 💌 Mensaje Principal === */
+    .message-box {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(4px);
+      border-radius: 16px; padding: 18px 16px; text-align: center;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10; max-width: 85%; width: 80vw;
+    }
+    .title {
+      font-size: 2rem; font-weight: bold; margin-bottom: 10px;
+      text-shadow: 0 0 10px #ff69b4; color: #fff; font-family: 'Pacifico', cursive;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow { from { text-shadow: 0 0 5px #fff, 0 0 10px #ff69b4; } to { text-shadow: 0 0 15px #fff, 0 0 25px #ff69b4; } }
+    .message { font-size: 1.2rem; line-height: 1.5; color: #fff; text-shadow: 0 0 4px #000; white-space: pre-line; }
+    
+    /* 🎂 Tarta en esquina */
+    .corner-cake {
+      position: absolute; top: -10px; right: -10px; width: 60px; height: auto; z-index: 11;
+      animation: bounce 2.2s ease-in-out infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+
+    /* === 👨‍🚀 Astronauta === */
+    #follower-astronaut {
+      position: absolute; width: 70px; height: auto; pointer-events: none; z-index: 15;
+      filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.8));
+    }
+    
+    /* === ✨ Chispas === */
+    .spark {
+      position: absolute; border-radius: 50%; pointer-events: none; z-index: 14;
+      background: radial-gradient(circle, #fff 0%, #ff69b4 40%, transparent 70%);
+      box-shadow: 0 0 6px #ff69b4; animation: sparkFade 0.7s ease-out forwards;
+    }
+    @keyframes sparkFade { 0%{transform:scale(1.2);opacity:1;} 100%{transform:scale(0);opacity:0;} }
+
+    /* === 🖼️ Imágenes Flotantes === */
+    .floating-img {
+      position: absolute; pointer-events: none; z-index: 2; opacity: 0;
+      animation: floatUp linear forwards;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) scale(0.8); opacity: 0; }
+      10% { opacity: 0.8; } 100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    /* === 𖤍 Créditos === */
+    .credits {
+      position: absolute; bottom: 70px; width: 100%; text-align: center;
+      font-family: 'Pacifico', cursive; font-size: 0.9rem; color: white;
+      text-shadow: 0 0 5px #ff66ff, 0 0 10px #ff66ff; z-index: 20; pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .message-box { padding: 14px 12px; }
+      .title { font-size: 1.6rem; } .message { font-size: 1rem; }
+      #follower-astronaut { width: 50px; } .corner-cake { width: 45px; }
+      .custom-box { padding: 20px 15px; }
+      .action-buttons { flex-direction: column; }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <div id="tap-instruction">✨ Toca cualquier parte de la pantalla 💙</div>
-  <div class="loading" id="loading">
-    <div class="loading-spinner"></div>
-    <div id="loadingText">Cargando tu galaxia personalizada...</div>
+
+  <!-- === ☰ Menú === -->
+  <div id="menu-btn" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
   </div>
-  
-  <div class="error-message" id="errorMessage">
-    <h3>⚠️ Error al cargar</h3>
-    <p id="errorDetails"></p>
-    <button onclick="loadDefaultGalaxy()">Ver Galaxia por Defecto</button>
+  <div id="menu-overlay" onclick="toggleMenu()"></div>
+  <div id="menu-panel">
+    <div class="menu-title">⚙️ Información</div>
+    <div class="menu-item"><i class="fas fa-code"></i> Desarrollado por BerMatCode</div>
+    <div class="menu-item"><i class="fas fa-gift"></i> Este proyecto es gratuito</div>
+    <div class="menu-item"><i class="fas fa-heart"></i> Hecho con 💖 para ti</div>
+    <div class="dev-info">
+      <strong>BerMatCode</strong><br>
+      © 2026 • Todos los derechos reservados<br>
+      <small>Proyecto open-source</small>
+    </div>
   </div>
 
-  <canvas id="galaxy-canvas"></canvas>
-  <div class="credits">BerMatCode</div>
-  <div id="err" class="error"></div>
-  <audio id="audio" preload="auto" loop></audio>
-  <canvas id="fx" style="position:fixed;inset:0;pointer-events:none;"></canvas>
+  <!-- === 🔋 Batería === -->
+  <div id="battery-indicator">
+    <div class="battery-icon"><div class="battery-level high" id="battery-level"></div></div>
+    <span id="battery-percent">--%</span>
+    <i class="fas fa-bolt charging-icon" id="charging-icon"></i>
+  </div>
 
+  <!-- === 💌 Panel de Personalización (Se muestra primero) === -->
+  <div id="custom-panel">
+    <div class="custom-box">
+      <div class="custom-title">✨ Personaliza tu Mensaje ✨</div>
+      
+      <div class="form-group">
+        <label for="custom-title">🎀 Título de tu carta:</label>
+        <input type="text" id="custom-title" placeholder="Ej: 💘Mi Yorchi💖" maxlength="60"
+          value="💘Mi Yorchi💖">
+        <small class="form-hint">💡 Puedes editar o dejar el texto por defecto</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="custom-message">💌 Tu mensaje especial:</label>
+        <textarea id="custom-message" placeholder="Escribe aquí tu mensaje de amor...">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
+
+Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
+
+Te amo muchísimo mi amorsita💖</textarea>
+        <small class="form-hint">💡 Edita o conserva el mensaje preescrito</small>
+      </div>
+      
+      <div class="form-group">
+        <label>🖼️ Imágenes flotantes (URLs - opcional):</label>
+        <div class="image-inputs">
+          <input type="url" id="img1" placeholder="URL imagen 1" 
+            value="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png">
+          <input type="url" id="img2" placeholder="URL imagen 2" value="">
+          <input type="url" id="img3" placeholder="URL imagen 3" value="">
+        </div>
+        <small class="form-hint">* Deja vacío para usar solo la imagen por defecto</small>
+      </div>
+      
+      <div class="form-group music-input">
+        <label>🎵 Música de fondo (URL MP3 - opcional):</label>
+        <input type="url" id="music-url" placeholder="URL de tu canción MP3"
+          value="https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3">
+        <small class="form-hint">* Deja vacío para usar la música por defecto</small>
+      </div>
+      
+      <button class="btn" id="generate-btn" onclick="generateLink()">
+        <i class="fas fa-magic"></i> Generar mi Link Personalizado
+      </button>
+      
+      <div id="loading" class="loading" style="display:none;">
+        <i class="fas fa-spinner fa-spin"></i> Creando tu link mágico...
+      </div>
+      
+      <!-- === ✅ Ventana de Éxito === -->
+      <div id="success" style="display:none;">
+        <div class="success-modal">
+          <i class="fas fa-check-circle"></i>
+          <p><strong>¡Tu detalle ha sido generado con éxito!</strong><br>
+          Ya está registrado en nuestra base de datos de <strong>BerMatCode</strong> 💾✨</p>
+          
+          <div style="font-weight:500;margin:10px 0 5px;">🔗 Tu link para compartir:</div>
+          <div class="share-url-box" id="share-url"></div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn" onclick="copyLink()">
+              <i class="fas fa-copy"></i> Copiar Link
+            </button>
+            <button class="view-btn" onclick="viewMyPage()">
+              <i class="fas fa-eye"></i> Ver mi Página
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === 💌 Mensaje Principal (Se muestra después) === -->
+  <div class="message-box" id="main-message" style="display:none;">
+    <div class="title" id="display-title">💘Mi Yorchi💖</div>
+    <div class="message" id="display-message">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
+
+Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
+
+Te amo muchísimo mi amorsita💖</div>
+    <img src="https://i.postimg.cc/7P2vYZFL/1760657847691-removebg-preview.png" class="corner-cake" alt="Tarta">
+  </div>
+
+  <!-- === Créditos === -->
+  <div class="credits">𖤍 BerMat-Code 𖤍</div>
+
+  <!-- === 👨‍🚀 Astronauta === -->
+  <img id="follower-astronaut" src="https://i.postimg.cc/vHFJ1dyW/1760657793625-removebg-preview.png" alt="Astronauta">
+
+  <!-- === Audio === -->
+  <audio id="bg-music" preload="auto" loop></audio>
+
+  <!-- === Firebase SDK (Modular) === -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDbciIRfI7X3srvZylbR0a93z8CyVBN-kU",
       authDomain: "personalizados-2026.firebaseapp.com",
@@ -148,508 +374,279 @@
       appId: "1:5347756837:web:6c238c8d24d02453bc68cc"
     };
 
-    let app, db;
-    try {
-      app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      console.log('✅ Firebase inicializado correctamente');
-    } catch (e) {
-      console.error('❌ Error inicializando Firebase:', e);
-      showError('Error de conexión con Firebase. Recarga la página.');
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Variables globales
+    window.firebaseDB = db;
+    window.generatedMessageId = null;
+
+    // === Cargar mensaje personalizado desde URL ===
+    async function loadCustomMessage() {
+      const params = new URLSearchParams(window.location.search);
+      const messageId = params.get('id');
+      
+      if (messageId) {
+        try {
+          const docRef = doc(db, "messages", messageId);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Aplicar contenido personalizado
+            document.getElementById('display-title').textContent = data.title || '💘Mi Yorchi💖';
+            document.getElementById('display-message').textContent = data.message || '';
+            
+            // Configurar música personalizada
+            if (data.musicUrl && data.musicUrl.trim() !== '') {
+              document.getElementById('bg-music').src = data.musicUrl;
+            }
+            
+            // Ocultar panel y mostrar mensaje
+            document.getElementById('custom-panel').classList.add('hidden');
+            document.getElementById('main-message').style.display = 'block';
+            
+            // Configurar imágenes flotantes
+            if (data.images && data.images.length > 0) {
+              window.customImages = data.images.filter(url => url && url.trim() !== '');
+            }
+            
+            // Reproducir música
+            playAudio();
+            return true;
+          }
+        } catch (error) {
+          console.error("Error cargando mensaje:", error);
+        }
+      }
+      return false;
     }
 
-    const defaultConfig = {
-      phrases: [
-        "Te amo ❤️","Mi amor 💖","Mi vida 🌟","Mi rey 👑","Mi cielo ☁️",
-        "Mi sol ☀️","Corazón 💓","Precioso 😍","Hermoso 🌸","Dulzura 🍯",
-        "Cariño 💕","Mi todo ✨","Mi paz 🕊️","Mi luz 💫","Mi estrella 🌠",
-        "Mi mundo 🌍","Mi alegría 😊","Mi sueño 💭","Mi fuerza 💪","Mi calma 🧘",
-        "Mi eterno ♾️","Mi siempre 🤍","Mi encanto 💖","Mi tesoro 💎","Mi razón 💞",
-        "Eres único 🌹","Mi inspiración ✨","Mi fortuna 🍀","Mi magia 🔮","Mi sueño dorado 💫",
-        "Mi alegría diaria 😊","Mi complemento 🧩","Mi aventura 🗺️","Mi refugio 🏠","Mi melodía 🎵",
-        "Mi poema 📜","Mi arte 🎨","Mi victoria 🏆","Mi esperanza 🕊️","Mi destino 🧭",
-        "Mi guerrero ⚔️","Mi caballero 🤴","Mi campeón 🏅","Mi orgullo 💙","Mi compañero 🤝"
-      ],
-      colors: {
-        textColor: '#fff9e6',
-        shadowColor: '#FFD700',
-        glowColor: '#FFD700',
-        heartColor: '#87CEEB',
-        bgColor: '#000000',
-        starColor: '#FFFFFF'
-      },
-      options: {
-        enableHearts: true,
-        enableMusic: true,
-        enableRotation: true
-      }
-    };
+    // === Generar link personalizado ===
+    window.generateLink = async function() {
+      const title = document.getElementById('custom-title').value.trim() || '💘Mi Yorchi💖';
+      const message = document.getElementById('custom-message').value.trim();
+      const musicUrl = document.getElementById('music-url').value.trim();
+      const images = [
+        document.getElementById('img1').value.trim(),
+        document.getElementById('img2').value.trim(),
+        document.getElementById('img3').value.trim()
+      ].filter(url => url && url.trim() !== '');
 
-    async function getConfig() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const configId = urlParams.get('config');
-      
-      if (!configId) {
-        console.log('ℹ️ No hay config ID, usando defaults');
-        return defaultConfig;
-      }
-      
-      console.log('🔍 Buscando config ID:', configId);
-      document.getElementById('loadingText').textContent = 'Cargando configuración personalizada...';
-      
-      try {
-        if (!db) throw new Error('Firebase no está inicializado');
-        
-        const docRef = doc(db, 'galaxyConfigs', configId);
-        console.log('📄 Referencia al documento:', docRef.path);
-        
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          console.log('✅ Configuración encontrada:', docSnap.data());
-          const data = docSnap.data();
-          return {
-            phrases: data.phrases || defaultConfig.phrases,
-            colors: { ...defaultConfig.colors, ...(data.colors || {}) },
-            options: { ...defaultConfig.options, ...(data.options || {}) }
-          };
-        } else {
-          console.warn('⚠️ Documento no encontrado');
-          throw new Error('Configuración no encontrada. El enlace puede ser inválido.');
-        }
-      } catch (error) {
-        console.error('❌ Error cargando configuración:', error);
-        showError(`No se pudo cargar la configuración: ${error.message}`);
-        return defaultConfig;
-      }
-    }
-
-    function showError(message) {
-      const errorDiv = document.getElementById('errorMessage');
-      const errorDetails = document.getElementById('errorDetails');
-      errorDetails.textContent = message;
-      errorDiv.classList.add('show');
-      document.getElementById('loading').classList.add('hidden');
-    }
-
-    window.loadDefaultGalaxy = function() {
-      document.getElementById('errorMessage').classList.remove('show');
-      initGalaxy(defaultConfig);
-    };
-
-    (async function(){
-      try {
-        const config = await getConfig();
-        document.getElementById('loading').classList.add('hidden');
-        initGalaxy(config);
-      } catch (e) {
-        console.error('Error fatal:', e);
-        showError('Error crítico: ' + e.message);
-        initGalaxy(defaultConfig);
-      }
-    })();
-
-    function initGalaxy(config) {
-      // ... (el resto del código de la galaxia permanece igual)
-      // Por espacio, te envío solo la parte crítica arriba
-      // El código completo de initGalaxy es el mismo que te di antes
-      
-      const err = document.getElementById('err');
-      function showError(msg){ err.textContent = msg; err.style.display='block'; }
-
-      const audio = document.getElementById('audio');
-      audio.src = 'https://raw.githubusercontent.com/BerMatCode/Proyectos-personalizados/main/Multimedia/Galaxia.mp3';
-      audio.crossOrigin = 'anonymous';
-      
-      let audioPlayed = false;
-      let audioUnlocked = false;
-      const instruction = document.getElementById('tap-instruction');
-      
-      function unlockAudio() {
-        if (audioUnlocked || !config.options.enableMusic) return;
-        audioUnlocked = true;
-        
-        if (instruction && !instruction.classList.contains('hidden')) {
-          instruction.classList.add('hidden');
-          setTimeout(() => {
-            if (instruction.parentNode) instruction.parentNode.removeChild(instruction);
-          }, 400);
-        }
-        
-        if (!audioPlayed) {
-          audio.play().then(() => {
-            audioPlayed = true;
-            audio.volume = 0.75;
-            console.log('🎵 Audio reproduciendo');
-          }).catch(e => {
-            console.warn('⚠ Audio autoplay failed:', e);
-            document.body.addEventListener('click', tryPlayAgain, { once: true, passive: true });
-            document.body.addEventListener('touchstart', tryPlayAgain, { once: true, passive: true });
-          });
-        }
-      }
-      
-      function tryPlayAgain() {
-        if (!audioPlayed && config.options.enableMusic) {
-          audio.play().then(() => { audioPlayed = true; audio.volume = 0.75; }).catch(() => {});
-        }
-      }
-      
-      function handleInteraction(e) { unlockAudio(); }
-      document.body.addEventListener('click', handleInteraction, { passive: true });
-      document.body.addEventListener('touchstart', handleInteraction, { passive: true });
-
-      try {
-        const test = document.createElement('canvas').getContext('webgl') || document.createElement('canvas').getContext('experimental-webgl');
-        if(!test) throw new Error('WebGL no disponible');
-      } catch(e) {
-        showError('WebGL parece desactivado. Usa Chrome/Edge/Firefox.');
+      if (!message) {
+        alert('💌 Por favor, escribe tu mensaje especial');
         return;
       }
 
+      // UI: Loading
+      document.getElementById('generate-btn').disabled = true;
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('success').style.display = 'none';
+
       try {
-        const canvas = document.getElementById('galaxy-canvas');
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false, powerPreference: 'high-performance' });
-        renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio||1));
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.outputEncoding = THREE.sRGBEncoding;
-
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(config.colors.bgColor);
-        
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; controls.dampingFactor = 0.08;
-        controls.minDistance = 10; controls.maxDistance = 250;
-        controls.target.set(0,0,0);
-        controls.enablePan = false; controls.enableZoom = true;
-
-        function setCam(){
-          const w = window.innerWidth, h = window.innerHeight;
-          const isMobile = w < 768 || w < h;
-          camera.fov = isMobile ? 90 : 75;
-          camera.position.set(0, isMobile? 30 : 25, isMobile? 120 : 85);
-          camera.updateProjectionMatrix(); controls.update();
-        }
-        setCam();
-        window.addEventListener('resize', () => {
-          camera.aspect = window.innerWidth/window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          setCam();
+        // Guardar en Firestore
+        const docRef = await addDoc(collection(window.firebaseDB, "messages"), {
+          title: title,
+          message: message,
+          images: images,
+          musicUrl: musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3',
+          createdAt: serverTimestamp()
         });
 
-        function makeStarTexture(size=512, count=1500) {
-          const c = document.createElement('canvas'); c.width = c.height = size;
-          const g = c.getContext('2d');
-          const r = size/2;
-          const bg = g.createRadialGradient(r,r, r*0.2, r,r, r);
-          bg.addColorStop(0,'#0a0500');
-          bg.addColorStop(1,'#000000');
-          g.fillStyle = bg; g.fillRect(0,0,size,size);
-          for (let i=0;i<count;i++) {
-            const x = Math.random()*size, y = Math.random()*size;
-            const base = Math.random()*0.6 + 0.4;
-            const glow = g.createRadialGradient(x,y,0, x,y, Math.random()*2+1);
-            glow.addColorStop(0, `rgba(255,255,255,${0.85*base})`);
-            glow.addColorStop(1, `rgba(255,240,200,${0.15*base})`);
-            g.fillStyle = glow; g.beginPath(); g.arc(x,y, Math.random()*1.1+0.5, 0, Math.PI*2); g.fill();
-          }
-          return new THREE.CanvasTexture(c);
-        }
+        // Guardar ID generado
+        window.generatedMessageId = docRef.id;
         
-        const bgGeo = new THREE.SphereGeometry(600, 32, 32);
-        const starTex = makeStarTexture(512, 1500);
-        starTex.wrapS = starTex.wrapT = THREE.RepeatWrapping;
-        const bg = new THREE.Mesh(bgGeo, new THREE.MeshBasicMaterial({ map: starTex, side: THREE.BackSide, transparent:false, opacity:0.7 }));
-        scene.add(bg);
-
-        const galaxy = new THREE.Group(); scene.add(galaxy);
-
-        const diskCount = 14;
-        const diskRadii = [];
-        const diskParticles = [];
-        const diskHeights = [];
-        const diskOpacities = [];
-        for(let d=0; d<diskCount; d++){
-          diskRadii.push(14 + d * 9.5);
-          diskParticles.push(1500 + d * 400);
-          diskHeights.push(2 + d * 1.2);
-          diskOpacities.push(0.9 - d * 0.045);
-        }
+        // Generar URL compartible
+        const shareUrl = `${window.location.origin}${window.location.pathname}?id=${docRef.id}`;
         
-        const allDisks = [];
-        for(let d=0; d<diskCount; d++){
-          const geom = new THREE.BufferGeometry();
-          const count = diskParticles[d];
-          const positions = new Float32Array(count * 3);
-          const r = diskRadii[d];
-          const h = diskHeights[d];
-          
-          for(let i=0; i<count; i++){
-            const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.15;
-            const radialVar = 1 + (Math.random() - 0.5) * 0.08;
-            positions[i*3] = Math.cos(angle) * r * radialVar;
-            positions[i*3+1] = (Math.random() - 0.5) * h * Math.pow(Math.random(), 0.4);
-            positions[i*3+2] = Math.sin(angle) * r * radialVar;
-          }
-          geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-          
-          const material = new THREE.PointsMaterial({
-            color: new THREE.Color(config.colors.starColor),
-            size: 0.35 - d * 0.012,
-            transparent: true,
-            opacity: Math.max(0.25, diskOpacities[d]),
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true,
-            depthWrite: false
-          });
-          
-          const disk = new THREE.Points(geom, material);
-          galaxy.add(disk);
-          allDisks.push(disk);
-        }
-
-        const phraseDiskCount = 6;
-        const phraseRingRadii = [32, 58, 84, 108, 132, 156];
-        const phrasesPerRing = [12, 20, 28, 32, 28, 20];
-        const phraseSprites = [];
-        const shadow = 36;
-
-        for(let ring=0; ring<phraseDiskCount; ring++){
-          const r = phraseRingRadii[ring];
-          const count = phrasesPerRing[ring];
-          const angleStep = (Math.PI * 2) / count;
-          
-          for(let i=0; i<count; i++){
-            const text = config.phrases[(ring * count + i) % config.phrases.length];
-            const c = document.createElement('canvas');
-            c.width = 1200; c.height = 180;
-            const g = c.getContext('2d');
-            g.clearRect(0,0,c.width,c.height);
-            g.font = '800 84px Georgia';
-            g.textAlign = 'center';
-            g.textBaseline = 'middle';
-
-            g.shadowColor = 'rgba(0,0,0,0.85)';
-            g.shadowBlur = shadow + 10;
-            g.fillStyle = config.colors.textColor;
-            g.fillText(text, c.width/2, c.height/2);
-
-            g.shadowColor = config.colors.shadowColor;
-            g.shadowBlur = shadow;
-            g.fillText(text, c.width/2, c.height/2);
-
-            g.shadowColor = config.colors.glowColor;
-            g.shadowBlur = shadow * 0.8;
-            g.fillText(text, c.width/2, c.height/2);
-
-            g.shadowBlur = 0;
-            g.fillStyle = config.colors.textColor;
-            g.fillText(text, c.width/2, c.height/2);
-
-            const tex = new THREE.CanvasTexture(c);
-            tex.needsUpdate = true;
-            const spr = new THREE.Sprite(new THREE.SpriteMaterial({ 
-              map: tex, transparent:true, depthWrite:false,
-              blending: THREE.AdditiveBlending
-            }));
-            
-            const angle = angleStep * i;
-            spr.position.set(Math.cos(angle) * r, (Math.random() - 0.5) * 3, Math.sin(angle) * r);
-            spr.scale.set(30, 6.5, 1);
-            galaxy.add(spr);
-            phraseSprites.push(spr);
-          }
-        }
-
-        const outerCount = 12000;
-        const outerGeom = new THREE.BufferGeometry();
-        const outerPos = new Float32Array(outerCount*3);
-        const outerRadius = 180;
-        for(let i=0; i<outerCount; i++){
-          const phi = Math.acos(2 * Math.random() - 1);
-          const theta = Math.random() * Math.PI * 2;
-          const r = outerRadius * (0.65 + 0.35 * Math.random());
-          outerPos[i*3] = r * Math.sin(phi) * Math.cos(theta);
-          outerPos[i*3+1] = r * Math.cos(phi) * 0.35;
-          outerPos[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
-        }
-        outerGeom.setAttribute('position', new THREE.BufferAttribute(outerPos,3));
-        const outerMaterial = new THREE.PointsMaterial({
-          color: new THREE.Color(config.colors.starColor), size: 0.25, transparent: true, opacity: 0.55,
-          blending: THREE.AdditiveBlending, sizeAttenuation: true, depthWrite: false
-        });
-        const outerStars = new THREE.Points(outerGeom, outerMaterial);
-        scene.add(outerStars);
-
-        const farOuterCount = 8000;
-        const farOuterGeom = new THREE.BufferGeometry();
-        const farOuterPos = new Float32Array(farOuterCount*3);
-        const farOuterRadius = 260;
-        for(let i=0; i<farOuterCount; i++){
-          const phi = Math.acos(2 * Math.random() - 1);
-          const theta = Math.random() * Math.PI * 2;
-          const r = farOuterRadius * (0.7 + 0.3 * Math.random());
-          farOuterPos[i*3] = r * Math.sin(phi) * Math.cos(theta);
-          farOuterPos[i*3+1] = r * Math.cos(phi) * 0.2;
-          farOuterPos[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
-        }
-        farOuterGeom.setAttribute('position', new THREE.BufferAttribute(farOuterPos,3));
-        const farOuterMaterial = new THREE.PointsMaterial({
-          color: new THREE.Color(config.colors.starColor), size: 0.18, transparent: true, opacity: 0.35,
-          blending: THREE.AdditiveBlending, sizeAttenuation: true, depthWrite: false
-        });
-        const farOuterStars = new THREE.Points(farOuterGeom, farOuterMaterial);
-        scene.add(farOuterStars);
-
-        const coreR = 12;
-        const coreTexture = new THREE.TextureLoader().load('https://i.postimg.cc/QxcfhyQF/1756434414.png');
+        // Mostrar éxito
+        document.getElementById('share-url').textContent = shareUrl;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        document.getElementById('generate-btn').disabled = false;
         
-        const glowSprite = new THREE.Sprite(
-          new THREE.SpriteMaterial({
-            map: new THREE.CanvasTexture((()=>{
-              const c=document.createElement('canvas');c.width=c.height=256;
-              const g=c.getContext('2d');
-              const grad=g.createRadialGradient(128,128,0,128,128,128);
-              grad.addColorStop(0, config.colors.glowColor + 'ff');
-              grad.addColorStop(0.3, config.colors.glowColor + 'cc');
-              grad.addColorStop(0.6, config.colors.glowColor + '66');
-              grad.addColorStop(1, config.colors.glowColor + '00');
-              g.fillStyle=grad;g.fillRect(0,0,256,256);
-              return c;
-            })()),
-            transparent:true, blending:THREE.AdditiveBlending, opacity:0.98
-          })
-        );
-        glowSprite.scale.set(50,50,1);
-        scene.add(glowSprite);
-        
-        const core = new THREE.Mesh(
-          new THREE.SphereGeometry(coreR, 32, 32),
-          new THREE.MeshBasicMaterial({ map: coreTexture })
-        );
-        core.renderOrder = 2;
-        scene.add(core);
+      } catch (error) {
+        console.error("Error generando link:", error);
+        alert('❌ Error al crear tu link. Intenta de nuevo.');
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generate-btn').disabled = false;
+      }
+    };
 
-        let tw = 0;
-        const rotationSpeed = config.options.enableRotation ? 1 : 0;
-        let pulse = 0;
-        function animate(){
-          requestAnimationFrame(animate);
-          const t = performance.now() * 0.001;
-          pulse = Math.sin(t * 1.5) * 0.06 + 0.97;
-          tw = (tw + 0.00018) % 1;
-          starTex.offset.set(tw, 0);
-          
-          galaxy.rotation.y = t * 0.035 * rotationSpeed;
-          core.rotation.y = t * 0.09 * rotationSpeed;
-          glowSprite.scale.set(50 * pulse, 50 * pulse, 1);
+    // === Copiar link ===
+    window.copyLink = function() {
+      const url = document.getElementById('share-url').textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('🔗 Link copiado al portapapeles ✨');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('🔗 Link copiado');
+      });
+    };
 
-          controls.update();
-          renderer.render(scene, camera);
-        }
-        animate();
+    // === Ver mi página ===
+    window.viewMyPage = function() {
+      if (window.generatedMessageId) {
+        // Redirigir a la misma página con el ID
+        window.location.href = `${window.location.pathname}?id=${window.generatedMessageId}`;
+      }
+    };
 
-        const fx = document.getElementById('fx');
-        const ctx2 = fx.getContext('2d');
-        function resizeFx(){
-          const dpr = Math.min(1.5, window.devicePixelRatio||1);
-          fx.width = Math.floor(innerWidth * dpr);
-          fx.height = Math.floor(innerHeight * dpr);
-          fx.style.width = innerWidth + 'px';
-          fx.style.height = innerHeight + 'px';
-        }
-        addEventListener('resize', resizeFx); resizeFx();
-        const DPR = Math.min(1.5, window.devicePixelRatio || 1);
-        const hearts = [];
-        const maxHearts = 45;
-        
-        function spawnHearts(x,y,n=18){
-          if (!config.options.enableHearts) return;
-          if (hearts.length + n > maxHearts) return;
-          x *= DPR; y *= DPR;
-          const hue = hexToHue(config.colors.heartColor);
-          for(let i=0;i<n;i++){
-            const a=Math.random()*Math.PI*2;
-            hearts.push({
-              x,y, vx:Math.cos(a)*(0.4+Math.random()*0.5), vy:-(0.6+Math.random()*0.8),
-              life:1, size:10+Math.random()*13, hue: hue + (Math.random() - 0.5) * 20
-            });
-          }
-        }
-        
-        function hexToHue(hex) {
-          const h = hex.replace('#','').toLowerCase();
-          if (h.includes('87ceeb') || h.includes('87cefa') || h.includes('add8e6')) return 195;
-          if (h.includes('ff') && h.includes('d7')) return 45;
-          if (h.includes('ff') && h.includes('69')) return 340;
-          return 210;
-        }
-        
-        function drawHeart(x,y,size,hue){
-          const s=size; ctx2.save(); ctx2.translate(x,y);
-          ctx2.beginPath(); ctx2.moveTo(0,-0.25*s);
-          ctx2.bezierCurveTo(.5*s,-.9*s,1.4*s,-.1*s,0,.9*s);
-          ctx2.bezierCurveTo(-1.4*s,-.1*s,-.5*s,-.9*s,0,-.25*s);
-          
-          const g=ctx2.createRadialGradient(0,0,0,0,0,s*1.5);
-          g.addColorStop(0,`hsla(${hue},100%,78%,0.98)`);
-          g.addColorStop(0.5,`hsla(${hue+10},100%,65%,0.7)`);
-          g.addColorStop(1,'rgba(173,216,230,0)');
-          ctx2.fillStyle=g; ctx2.fill();
-          
-          ctx2.shadowColor = `hsla(${hue},100%,72%,0.9)`;
-          ctx2.shadowBlur = s * 0.7;
-          ctx2.fillStyle = `hsla(${hue},100%,82%,0.95)`;
-          ctx2.fill();
-          ctx2.shadowBlur = 0;
-          ctx2.restore();
-        }
-        
-        let lastTap=0;
-        addEventListener('click', (e)=>{ 
-          unlockAudio();
-          const now=performance.now(); 
-          if(now-lastTap<320) spawnHearts(e.clientX,e.clientY,18); 
-          lastTap=now; 
-        }, {passive:true});
-        
-        addEventListener('touchend', (e)=>{ 
-          unlockAudio();
-          const now=performance.now(); 
-          const t=e.changedTouches&&e.changedTouches[0]; 
-          if(now-lastTap<320&&t) spawnHearts(t.clientX,t.clientY,18); 
-          lastTap=now; 
-        }, {passive:true});
+    // Exportar funciones
+    window.loadCustomMessage = loadCustomMessage;
+  </script>
 
-        function loopFx(){
-          ctx2.clearRect(0,0,fx.width,fx.height);
-          for(let i=hearts.length-1;i>=0;i--){ 
-            const h=hearts[i]; 
-            h.x+=h.vx; h.y+=h.vy; h.vy-=0.018; h.life-=0.018;
-            ctx2.globalAlpha=Math.max(0,h.life); 
-            drawHeart(h.x,h.y,h.size,h.hue); 
-            ctx2.globalAlpha=1; 
-            if(h.life<=0) hearts.splice(i,1);
-          }
-          requestAnimationFrame(loopFx);
-        }
-        loopFx();
+  <script>
+    // === Funciones de UI y efectos ===
+    
+    window.addEventListener('load', async () => {
+      const loaded = await (typeof loadCustomMessage === 'function' ? loadCustomMessage() : false);
+      
+      if (!loaded) {
+        document.getElementById('custom-panel').classList.remove('hidden');
+        document.getElementById('main-message').style.display = 'none';
+      }
+      
+      initBattery();
+      startAstronaut();
+      startFloatingImages();
+    });
 
-      } catch(e) { 
-        console.error('Error en initGalaxy:', e);
-        showError('Error: '+e.message); 
+    // === Audio ===
+    const bg = document.getElementById('bg-music');
+    // URL por defecto (se puede sobrescribir desde Firebase)
+    if (!bg.src) {
+      bg.src = 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
+    }
+    let audioReady = false;
+
+    async function playAudio() {
+      if (audioReady) return;
+      try {
+        await bg.load();
+        bg.volume = 0.6;
+        await bg.play();
+        audioReady = true;
+      } catch(e) { /* Autoplay requiere interacción */ }
+    }
+
+    document.addEventListener('click', playAudio, { once: true, passive: true });
+    document.addEventListener('touchstart', playAudio, { once: true, passive: true });
+
+    // === Menú ===
+    function toggleMenu() {
+      document.getElementById('menu-panel').classList.toggle('active');
+      document.getElementById('menu-btn').classList.toggle('active');
+      document.getElementById('menu-overlay').classList.toggle('active');
+    }
+
+    // === Batería ===
+    async function initBattery() {
+      const l = document.getElementById('battery-level');
+      const p = document.getElementById('battery-percent');
+      const c = document.getElementById('charging-icon');
+      
+      const upd = (lvl, chg) => {
+        const pct = Math.round(lvl * 100);
+        p.textContent = pct + '%';
+        l.style.width = pct + '%';
+        l.className = 'battery-level ' + (pct <= 20 ? 'low' : pct <= 50 ? 'medium' : 'high');
+        c.classList.toggle('active', chg);
+        c.style.display = chg ? 'inline-block' : 'none';
+      };
+
+      if ('getBattery' in navigator) {
+        try {
+          const b = await navigator.getBattery();
+          upd(b.level, b.charging);
+          b.addEventListener('levelchange', () => upd(b.level, b.charging));
+          b.addEventListener('chargingchange', () => upd(b.level, b.charging));
+          return;
+        } catch(e) {}
+      }
+      upd(0.85, false);
+    }
+
+    // === Imágenes flotantes ===
+    let customImages = [];
+    function startFloatingImages() {
+      const defaultSrc = "https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png";
+      
+      setInterval(() => {
+        const img = document.createElement('img');
+        const src = customImages.length > 0 
+          ? customImages[Math.floor(Math.random() * customImages.length)]
+          : defaultSrc;
+        img.src = src;
+        img.className = 'floating-img';
+        img.style.width = (25 + Math.random() * 35) + 'px';
+        img.style.left = (Math.random() * 90) + 'vw';
+        img.style.animationDuration = (5 + Math.random() * 5) + 's';
+        document.body.appendChild(img);
+        setTimeout(() => img.remove(), 11000);
+      }, 1200);
+    }
+
+    // === Astronauta + Chispas ===
+    const astro = document.getElementById('follower-astronaut');
+    let ax=40, ay=60, tx=50, ty=50;
+    astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
+    
+    function updatePos(e) {
+      const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+      if (x !== null) {
+        tx = (x / window.innerWidth) * 100;
+        ty = (y / window.innerHeight) * 100;
       }
     }
-    
-    window.showError = function(msg) {
-      const errorDiv = document.getElementById('errorMessage');
-      const errorDetails = document.getElementById('errorDetails');
-      errorDetails.textContent = msg;
-      errorDiv.classList.add('show');
-      document.getElementById('loading').classList.add('hidden');
-    };
+    document.addEventListener('mousemove', updatePos, {passive:true});
+    document.addEventListener('touchmove', updatePos, {passive:true});
+
+    function spark(x, y, dx, dy) {
+      const s = document.createElement('div'); s.className='spark';
+      const sz = 3 + Math.random()*6;
+      s.style.cssText = `width:${sz}px;height:${sz}px;left:${x}px;top:${y}px`;
+      
+      const ang = Math.atan2(dy, dx) + Math.PI + (Math.random()-0.5)*1.5; 
+      const spd = 2 + Math.random()*4;
+      let px=x, py=y, op=1, life=25;
+      
+      (function anim(){
+        if(life-- <= 0 || op <= 0){ s.remove(); return; }
+        px += Math.cos(ang)*spd; py += Math.sin(ang)*spd; op -= 0.04;
+        s.style.left=px+'px'; s.style.top=py+'px'; s.style.opacity=op;
+        requestAnimationFrame(anim);
+      })();
+    }
+
+    let lastSpark = 0;
+    function startAstronaut() {
+      function loop() {
+        const dx = tx-ax, dy = ty-ay;
+        ax += dx*0.08; ay += dy*0.08;
+        astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
+        
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const now = performance.now();
+        
+        if(dist > 0.5 && now - lastSpark > 25) {
+          lastSpark = now;
+          const r = astro.getBoundingClientRect();
+          const cx = r.left + r.width/2, cy = r.top + r.height/2;
+          for(let i=0; i<5; i++) spark(cx, cy, dx, dy); 
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
   </script>
 </body>
 </html>
