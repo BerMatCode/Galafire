@@ -93,14 +93,65 @@
       cursor: not-allowed; transform: none; box-shadow: none; 
     }
     .btn:disabled::before { display: none; }
-    .loading {
+    .loading-inline {
       text-align: center; padding: 18px; color: #ff1493; font-weight: 500;
       display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .loading i { animation: spin 1s linear infinite; }
+    .loading-inline i { animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     
-    /* ✨ Modal de generación centrado */
+    /* === NUEVO MODAL DE CARGA CENTRALIZADO === */
+    .loading-modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 3000; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .loading-modal-overlay.active { opacity: 1; visibility: visible; }
+    .loading-modal {
+      background: linear-gradient(145deg, #ffffff, #fff5f8);
+      border: 3px solid #ff69b4; border-radius: 28px;
+      padding: 32px 28px; width: 90%; max-width: 380px;
+      text-align: center; color: #333;
+      box-shadow: 0 25px 80px rgba(255,20,147,0.45), 0 0 0 4px rgba(255,255,255,0.15);
+      transform: scale(0.95) translateY(15px);
+      transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+      position: relative;
+    }
+    .loading-modal-overlay.active .loading-modal {
+      transform: scale(1) translateY(0);
+    }
+    .loading-avatar {
+      width: 95px; height: 95px; border-radius: 50%;
+      margin: 0 auto 18px; overflow: hidden;
+      border: 4px solid #ff69b4;
+      box-shadow: 0 10px 30px rgba(255,20,147,0.35);
+      animation: pulseAvatar 2s ease-in-out infinite;
+      background: #fff;
+    }
+    @keyframes pulseAvatar { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+    .loading-avatar-img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .loading-spinner {
+      width: 55px; height: 55px; border: 5px solid rgba(255,105,180,0.25);
+      border-top: 5px solid #ff1493; border-radius: 50%;
+      margin: 0 auto 16px; animation: spin 1s linear infinite;
+    }
+    .loading-modal h4 {
+      font-family: 'Pacifico', cursive; font-size: 1.4rem;
+      color: #ff1493; margin-bottom: 8px;
+    }
+    .loading-modal p {
+      font-size: 0.95rem; color: #666; line-height: 1.5;
+    }
+    .loading-hearts {
+      margin-top: 14px; font-size: 1.3rem; color: #ff69b4;
+      animation: floatHearts 1.5s ease-in-out infinite;
+    }
+    @keyframes floatHearts { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+    
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
@@ -109,40 +160,6 @@
       transition: all 0.35s ease;
     }
     .modal-overlay.active { opacity: 1; visibility: visible; }
-    
-    .loading-modal {
-      background: linear-gradient(145deg, #ffffff, #fff5f8);
-      border: 3px solid #ff69b4; border-radius: 24px;
-      padding: 32px 28px; width: 100%; max-width: 420px;
-      text-align: center; color: #333;
-      box-shadow: 0 25px 80px rgba(255,105,180,0.5), 0 0 0 4px rgba(255,255,255,0.1);
-      transform: scale(0.95) translateY(15px); opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-      position: relative; overflow: hidden;
-    }
-    .loading-modal::before {
-      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(255,105,180,0.1) 0%, transparent 70%);
-      animation: pulse 2.5s ease-in-out infinite; pointer-events: none;
-    }
-    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
-    .modal-overlay.active .loading-modal {
-      transform: scale(1) translateY(0); opacity: 1;
-    }
-    .loading-spinner {
-      width: 70px; height: 70px; margin: 0 auto 20px;
-      border: 5px solid rgba(255,105,180,0.2);
-      border-top-color: #ff1493; border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    .loading-modal h3 {
-      font-family: 'Pacifico', cursive; font-size: 1.4rem; color: #ff1493;
-      margin-bottom: 8px; position: relative; z-index: 2;
-    }
-    .loading-modal p {
-      font-size: 0.95rem; color: #666; position: relative; z-index: 2;
-    }
-    
     .success-modal {
       background: linear-gradient(145deg, #ffffff, #fff5f8);
       border: 3px solid #28a745; border-radius: 24px;
@@ -158,6 +175,7 @@
       background: radial-gradient(circle, rgba(40,167,69,0.1) 0%, transparent 70%);
       animation: pulse 3s ease-in-out infinite; pointer-events: none;
     }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
     .modal-overlay.active .success-modal {
       transform: scale(1) translateY(0); opacity: 1;
     }
@@ -232,65 +250,103 @@
       box-shadow: 0 4px 15px rgba(40,167,69,0.3);
     }
     .btn-view:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(40,167,69,0.5); }
-    
-    /* 🎵 TikTok opcional - pequeño y elegante */
-    .tiktok-optional {
-      margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ffb6c1;
-      text-align: center; position: relative; z-index: 2;
+    .tiktok-modal {
+      background: linear-gradient(145deg, #ffffff, #fff0f5);
+      border: 3px solid #ff1493; border-radius: 24px;
+      padding: 30px 25px; width: 100%; max-width: 440px;
+      text-align: center; color: #333;
+      box-shadow: 0 30px 90px rgba(255,20,147,0.4), 0 0 0 4px rgba(255,255,255,0.15);
+      transform: scale(0.9) translateY(25px); opacity: 0;
+      transition: all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+      position: relative; overflow: hidden;
     }
-    .tiktok-optional p {
-      font-size: 0.85rem; color: #777; margin-bottom: 10px;
+    .tiktok-modal::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #ff1493, #ff69b4, #ff1493);
+      animation: shimmer 2s linear infinite;
     }
-    .tiktok-mini-profile {
-      display: inline-flex; align-items: center; gap: 10px;
+    @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+    .modal-overlay.active .tiktok-modal {
+      transform: scale(1) translateY(0); opacity: 1;
+    }
+    .tiktok-icon {
+      width: 110px; height: 110px; 
+      border-radius: 50%; 
+      margin: 0 auto 22px; 
+      box-shadow: 0 18px 45px rgba(255,20,147,0.45), 0 0 0 5px rgba(255,255,255,0.35);
+      animation: bounce 1.5s ease infinite; 
+      position: relative; 
+      z-index: 2;
+      overflow: hidden;
+      /* === CORRECCIÓN: Simplificado para mostrar imagen correctamente === */
+      border: 4px solid #ff69b4;
+      background: #fff;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+    .tiktok-avatar-img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; border-radius: 50%;
+    }
+    .tiktok-modal h3 {
+      font-family: 'Pacifico', cursive; font-size: 1.65rem; 
+      background: linear-gradient(135deg, #ff1493, #ff69b4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 12px; position: relative; z-index: 2;
+    }
+    .tiktok-modal p { 
+      font-size: 1.02rem; line-height: 1.6; margin-bottom: 22px; 
+      color: #555; position: relative; z-index: 2; 
+    }
+    .tiktok-modal .highlight { 
+      color: #ff1493; font-weight: 700; font-size: 1.08rem; 
+    }
+    .tiktok-profile {
       background: linear-gradient(135deg, #fff, #fff5f8);
-      border: 2px solid #ffb6c1; border-radius: 14px;
-      padding: 8px 14px; cursor: pointer;
-      transition: all 0.25s ease;
+      border: 2px solid #ffb6c1; border-radius: 16px;
+      padding: 16px; margin: 16px 0; display: flex; align-items: center; gap: 14px;
+      position: relative; z-index: 2;
     }
-    .tiktok-mini-profile:hover {
-      transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,105,180,0.3);
-      border-color: #ff69b4;
+    .tiktok-avatar {
+      width: 70px; height: 70px; border-radius: 50%; 
+      overflow: hidden; border: 4px solid #ff69b4;
+      box-shadow: 0 5px 15px rgba(255,20,147,0.35);
+      flex-shrink: 0;
     }
-    .tiktok-mini-avatar {
-      width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
-      border: 2px solid #ff69b4; flex-shrink: 0;
-    }
-    .tiktok-mini-avatar img {
+    .tiktok-avatar-img-small {
       width: 100%; height: 100%; object-fit: cover; display: block;
     }
-    .tiktok-mini-info { text-align: left; }
-    .tiktok-mini-username { font-weight: 600; color: #333; font-size: 0.9rem; }
-    .tiktok-mini-handle { font-size: 0.75rem; color: #888; }
-    
-    .permanent-notice {
-      background: linear-gradient(135deg, #fff9e6, #fff3cd);
-      border: 2px solid #ffc107; border-radius: 14px;
-      padding: 14px; margin: 12px 0; text-align: left;
-      position: relative; z-index: 2; font-size: 0.9rem; color: #664d03;
-    }
-    .permanent-notice strong { color: #856404; }
-    .btn-contact {
-      width: 100%; padding: 14px; margin-top: 10px;
-      background: linear-gradient(135deg, #6f42c1, #9b6fcc);
-      color: white; border: none; border-radius: 16px;
-      font-size: 1rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.28s ease; font-family: 'Roboto', sans-serif;
+    .tiktok-info { text-align: left; flex: 1; }
+    .tiktok-username { font-weight: 700; color: #333; font-size: 1.1rem; }
+    .tiktok-handle { font-size: 0.88rem; color: #777; }
+    .btn-tiktok {
+      width: 100%; padding: 16px; 
+      background: linear-gradient(135deg, #000, #25F4EE, #FE2C55);
+      color: white; border: none; border-radius: 18px; 
+      font-size: 1.12rem; font-weight: 700; cursor: pointer; 
+      transition: all 0.3s ease; font-family: 'Roboto', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
       position: relative; overflow: hidden; z-index: 2;
-      box-shadow: 0 5px 18px rgba(111,66,193,0.35);
+      box-shadow: 0 6px 20px rgba(254,44,85,0.4);
+      animation: pulseBtn 2s ease-in-out infinite;
     }
-    .btn-contact::before {
-      content: ''; position: absolute; inset: 0; border-radius: 16px;
-      padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      pointer-events: none; opacity: 0; transition: opacity 0.25s;
+    @keyframes pulseBtn { 0%,100%{box-shadow:0 6px 20px rgba(254,44,85,0.4);} 50%{box-shadow:0 8px 30px rgba(254,44,85,0.7);} }
+    .btn-tiktok:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 35px rgba(254,44,85,0.6); }
+    .btn-tiktok:active { transform: translateY(1px) scale(0.99); }
+    .btn-tiktok i { font-size: 1.35rem; }
+    .tiktok-note {
+      font-size: 0.84rem; color: #888; margin-top: 16px; 
+      padding: 11px; background: rgba(255,255,255,0.75);
+      border-radius: 12px; position: relative; z-index: 2;
     }
-    .btn-contact:hover::before { opacity: 1; }
-    .btn-contact:hover { transform: translateY(-3px); box-shadow: 0 9px 28px rgba(111,66,193,0.55); }
-    .btn-contact:active { transform: translateY(1px); }
-    
+    .tiktok-note i { color: #ff69b4; margin-right: 5px; }
+    .decoration {
+      position: absolute; width: 60px; height: auto; opacity: 0.6; pointer-events: none;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 4px 8px rgba(255,105,180,0.3));
+    }
+    .dec-1 { top: 30px; left: 30px; animation-delay: 0s; }
+    .dec-2 { bottom: 40px; right: 30px; animation-delay: 1s; width: 45px; }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px) rotate(5deg);} }
     .confetti {
       position: fixed; width: 10px; height: 10px; 
       background: #ff69b4; border-radius: 50%;
@@ -301,16 +357,6 @@
       0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
       100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
-    
-    .decoration {
-      position: absolute; width: 60px; height: auto; opacity: 0.6; pointer-events: none;
-      animation: float 3s ease-in-out infinite;
-      filter: drop-shadow(0 4px 8px rgba(255,105,180,0.3));
-    }
-    .dec-1 { top: 30px; left: 30px; animation-delay: 0s; }
-    .dec-2 { bottom: 40px; right: 30px; animation-delay: 1s; width: 45px; }
-    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px) rotate(5deg);} }
-    
     #menu-btn {
       position: absolute; top: 15px; right: 15px; width: 38px; height: 38px;
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
@@ -346,15 +392,46 @@
       text-align: center; font-size: 0.85rem; color: #777;
     }
     .dev-footer strong { color: #ff1493; }
-    
+    .permanent-notice {
+      background: linear-gradient(135deg, #fff9e6, #fff3cd);
+      border: 2px solid #ffc107; border-radius: 14px;
+      padding: 14px; margin: 12px 0; text-align: left;
+      position: relative; z-index: 2; font-size: 0.9rem; color: #664d03;
+    }
+    .permanent-notice strong { color: #856404; }
+    .btn-contact {
+      width: 100%; padding: 14px; margin-top: 10px;
+      background: linear-gradient(135deg, #6f42c1, #9b6fcc);
+      color: white; border: none; border-radius: 16px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.28s ease; font-family: 'Roboto', sans-serif;
+      position: relative; overflow: hidden; z-index: 2;
+      box-shadow: 0 5px 18px rgba(111,66,193,0.35);
+    }
+    .btn-contact::before {
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      pointer-events: none; opacity: 0; transition: opacity 0.25s;
+    }
+    .btn-contact:hover::before { opacity: 1; }
+    .btn-contact:hover { transform: translateY(-3px); box-shadow: 0 9px 28px rgba(111,66,193,0.55); }
+    .btn-contact:active { transform: translateY(1px); }
     @media (max-width: 520px) {
       .panel-container { padding: 20px 18px; border-radius: 20px; }
       .panel-title { font-size: 1.5rem; }
       .modal-buttons { grid-template-columns: 1fr; }
       .decoration { width: 40px; }
       .dec-2 { width: 32px; }
-      .loading-modal, .success-modal { max-width: 430px; padding: 26px 22px; }
-      .loading-spinner { width: 60px; height: 60px; }
+      .tiktok-modal { padding: 26px 21px; }
+      .tiktok-icon { width: 100px; height: 100px; }
+      .tiktok-avatar { width: 62px; height: 62px; }
+      .success-modal { max-width: 430px; padding: 26px 22px; }
+      .loading-modal { padding: 28px 24px; max-width: 350px; }
+      .loading-avatar { width: 85px; height: 85px; }
+      .loading-spinner { width: 48px; height: 48px; }
     }
   </style>
 </head>
@@ -362,7 +439,7 @@
   <img class="decoration dec-1" src="https://i.postimg.cc/7P2vYZFL/1760657847691-removebg-preview.png" alt="✨">
   <img class="decoration dec-2" src="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png" alt="🎀">
   
-  <!-- Menú lateral -->
+  <!-- Botón menú -->
   <div id="menu-btn" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
@@ -383,22 +460,18 @@
   <div class="panel-container">
     <div class="panel-header">
       <div class="panel-title">𝗣𝗮𝗻𝗲𝗹 𝗱𝗲 𝗖𝗮𝗿𝘁𝗮</div>
-      <div class="panel-subtitle">Edita o conserva los valores preescritos 💕</div>
+      <div class="panel-subtitle">💗Edita los valores💗</div>
     </div>
     <div class="form-scroll">
       <div class="form-group">
         <label for="custom-title"><i class="fas fa-font"></i> Título de tu carta:</label>
-        <input type="text" id="custom-title" maxlength="60" value="💘TE AMO💖">
-        <small class="form-hint">💡 Puedes editar o dejar el texto por defecto</small>
+        <input type="text" id="custom-title" maxlength="60" value="𖤍𝐁𝐞𝐫𝐌𝐚𝐭_𝐂𝐨𝐝𝐞𖤍">
+        <small class="form-hint">Edita los valores</small>
       </div>
       <div class="form-group">
         <label for="custom-message"><i class="fas fa-pen-fancy"></i> Tu mensaje especial:</label>
-        <textarea id="custom-message">Te amo mucho mi amor. 💗 No hay distancia ni tiempo que cambie lo que siento por ti 🌹 , porque tú eres mi todo, mi reina hermosa. Desde que llegaste a mi vida, 💞 todo es más bonito y especial.
-
-Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
-
-Te amo muchísimo mi amor💖</textarea>
-        <small class="form-hint">💡 Edita o conserva el mensaje preescrito</small>
+        <textarea id="custom-message">ㅤ</textarea>
+        <small class="form-hint">Edita los valores</small>
       </div>
       <div class="form-group">
         <label><i class="fas fa-images"></i> Imágenes flotantes (URLs - opcional):</label>
@@ -420,21 +493,58 @@ Te amo muchísimo mi amor💖</textarea>
     <button class="btn" id="generate-btn" onclick="generateLink()">
       <i class="fas fa-magic"></i> Generar mi Link
     </button>
-    <div id="loading-inline" class="loading" style="display:none;">
+    <div id="loading-inline" class="loading-inline" style="display:none;">
       <i class="fas fa-spinner"></i> Generando tu link...
     </div>
   </div>
   
-  <!-- ✨ Modal de generación centrado -->
-  <div class="modal-overlay" id="loading-modal">
+  <!-- === NUEVO MODAL DE CARGA CENTRALIZADO === -->
+  <div class="loading-modal-overlay" id="loading-modal">
     <div class="loading-modal">
+      <div class="loading-avatar">
+        <img src="https://raw.githubusercontent.com/BerMatCode/Galafire/main/Multimedia/Screenshot_20260225-092058.jpg" 
+             alt="Perfil" class="loading-avatar-img"
+             onerror="this.src='https://via.placeholder.com/95/ff69b4/ffffff?text=🎀'">
+      </div>
       <div class="loading-spinner"></div>
-      <h3>𝐆𝐞𝐧𝐞𝐫𝐚𝐧𝐝𝐨 𝐄𝐬𝐩𝐞𝐫𝐞 𝐩𝐨𝐫 𝐟𝐚𝐯𝐨𝐫</h3>
-      <p>Ten paciencia, estamos creando tu carta especial 💕</p>
+      <h4>𝐆𝐄𝐍𝐄𝐑𝐀𝐍𝐃𝐎...</h4>
+      <p>Espere un momento</p>
+      <div class="loading-hearts">👾</div>
     </div>
   </div>
   
-  <!-- Modal de éxito -->
+  <!-- Modal TikTok -->
+  <div class="modal-overlay" id="tiktok-modal">
+    <div class="tiktok-modal">
+      <button class="modal-close" onclick="closeModal('tiktok-modal')" title="Cerrar">×</button>
+      <div class="tiktok-icon">
+        <img src="https://raw.githubusercontent.com/BerMatCode/Galafire/main/Multimedia/Screenshot_20260225-092058.jpg" 
+             alt="Perfil TikTok" class="tiktok-avatar-img" 
+             onerror="this.src='https://via.placeholder.com/110/ff69b4/ffffff?text=🎀'">
+      </div>
+      <h3>𝐒𝐢𝐠𝐮𝐞𝐦𝐞 𝐞𝐧 𝐓𝐢𝐤𝐭𝐨𝐤</h3>
+      <p>Para desbloquear tu detalle personalizado, <span class="highlight">sigue mi perfil de TikTok</span> y regresa aquí. ¡Es rápido y gratis! ✨</p>
+      <div class="tiktok-profile">
+        <div class="tiktok-avatar">
+          <img src="https://raw.githubusercontent.com/BerMatCode/Galafire/main/Multimedia/Screenshot_20260225-092058.jpg" 
+               alt="Avatar" class="tiktok-avatar-img-small"
+               onerror="this.src='https://via.placeholder.com/70/ff69b4/ffffff?text=🎀'">
+        </div>
+        <div class="tiktok-info">
+          <div class="tiktok-username">BerMatCode</div>
+          <div class="tiktok-handle">@bermatcode •Desarrollador</div>
+        </div>
+      </div>
+      <button class="btn-tiktok" onclick="followTikTok()">
+        <i class="fab fa-tiktok"></i> Seguir en TikTok
+      </button>
+      <div class="tiktok-note">
+        <i class="fas fa-info-circle"></i> Al hacer clic, se abrirá TikTok. Cuando regreses, tu link estará listo 🌸
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal éxito -->
   <div class="modal-overlay" id="success-modal">
     <div class="success-modal">
       <button class="modal-close" onclick="closeModal('success-modal')" title="Cerrar">×</button>
@@ -463,22 +573,6 @@ Te amo muchísimo mi amor💖</textarea>
           <i class="fas fa-eye"></i> Ver mi Página
         </button>
       </div>
-      
-      <!-- 🎵 TikTok opcional (sin obligación) -->
-      <div class="tiktok-optional">
-        <p>¡Sígueme para más Proyectos!</p>
-        <div class="tiktok-mini-profile" onclick="openTikTok()">
-          <div class="tiktok-mini-avatar">
-            <img src="https://raw.githubusercontent.com/BerMatCode/Galafire/main/Multimedia/Screenshot_20260225-092058.jpg" 
-                 alt="TikTok" onerror="this.src='https://via.placeholder.com/32/ff69b4/ffffff?text=🎀'">
-          </div>
-          <div class="tiktok-mini-info">
-            <div class="tiktok-mini-username">BerMatCode</div>
-            <div class="tiktok-mini-handle">@bermatcode</div>
-          </div>
-          <i class="fab fa-tiktok" style="color:#ff1493;font-size:1.1rem;margin-left:5px"></i>
-        </div>
-      </div>
     </div>
   </div>
   
@@ -499,12 +593,12 @@ Te amo muchísimo mi amor💖</textarea>
     const db = getFirestore(app);
     window.firebaseDB = db;
     window.generatedMessageId = null;
+    window.tiktokFollowed = false;
     window.TIKTOK_PROFILE = "https://www.tiktok.com/@bermatcode";
     window.DEVELOPER_CONTACT = "https://wa.me/51930569195";
     
-    // ✨ Función principal: Generar link SIN TikTok obligatorio
     window.generateLink = async function() {
-      const title = document.getElementById('custom-title').value.trim() || '💘TE AMO💖';
+      const title = document.getElementById('custom-title').value.trim() || '𖤍𝐁𝐞𝐫𝐌𝐚𝐭_𝐂𝐨𝐝𝐞𖤍';
       const message = document.getElementById('custom-message').value.trim();
       const musicUrl = document.getElementById('music-url').value.trim();
       const images = [
@@ -513,15 +607,37 @@ Te amo muchísimo mi amor💖</textarea>
         document.getElementById('img3').value.trim()
       ].filter(url => url && url.trim() !== '');
       
-      if (!message) { 
-        showToast('💌 Por favor, escribe tu mensaje especial'); 
-        return; 
-      }
+      if (!message) { alert('💌 Por favor, escribe tu mensaje especial'); return; }
       
-      // ✨ Mostrar modal de generación centrado
+      // Mostrar modal de TikTok primero
+      document.getElementById('tiktok-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    };
+    
+    window.followTikTok = function() {
+      window.tiktokFollowed = true;
+      createConfetti();
+      window.open(window.TIKTOK_PROFILE, '_blank');
+      document.getElementById('tiktok-modal').classList.remove('active');
+      
+      // === MOSTRAR MODAL DE CARGA CENTRALIZADO ===
       document.getElementById('loading-modal').classList.add('active');
       document.getElementById('generate-btn').disabled = true;
-      document.body.style.overflow = 'hidden';
+      
+      setTimeout(() => {
+        completeGeneration();
+      }, 2500);
+    };
+    
+    async function completeGeneration() {
+      const title = document.getElementById('custom-title').value.trim() || '𖤍𝐁𝐞𝐫𝐌𝐚𝐭_𝐂𝐨𝐝𝐞𖤍';
+      const message = document.getElementById('custom-message').value.trim();
+      const musicUrl = document.getElementById('music-url').value.trim();
+      const images = [
+        document.getElementById('img1').value.trim(),
+        document.getElementById('img2').value.trim(),
+        document.getElementById('img3').value.trim()
+      ].filter(url => url && url.trim() !== '');
       
       try {
         const docRef = await addDoc(collection(window.firebaseDB, "messages"), {
@@ -532,29 +648,24 @@ Te amo muchísimo mi amor💖</textarea>
         
         window.generatedMessageId = docRef.id;
         const shareUrl = `${window.location.origin}${window.location.pathname.replace('panel.html','index.html')}?id=${docRef.id}`;
-        
-        // Ocultar loading y mostrar éxito
-        document.getElementById('loading-modal').classList.remove('active');
         document.getElementById('share-url').textContent = shareUrl;
+        
+        // === OCULTAR MODAL DE CARGA Y MOSTRAR ÉXITO ===
+        document.getElementById('loading-modal').classList.remove('active');
         document.getElementById('success-modal').classList.add('active');
         document.getElementById('generate-btn').disabled = false;
         document.body.style.overflow = '';
         
         createConfetti();
-        
       } catch (error) {
         console.error("Error:", error);
+        // Ocultar loading modal incluso en error
         document.getElementById('loading-modal').classList.remove('active');
+        alert('❌ Error al crear tu link. Intenta de nuevo.');
         document.getElementById('generate-btn').disabled = false;
         document.body.style.overflow = '';
-        showToast('❌ Error al crear tu link. Intenta de nuevo.');
       }
-    };
-    
-    // 🎵 Abrir TikTok (opcional)
-    window.openTikTok = function() {
-      window.open(window.TIKTOK_PROFILE, '_blank');
-    };
+    }
     
     window.createConfetti = function() {
       const colors = ['#ff1493', '#ff69b4', '#ffb6c1', '#28a745', '#20c997', '#ff6b6b'];
@@ -607,9 +718,9 @@ Te amo muchísimo mi amor💖</textarea>
       setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';setTimeout(()=>t.remove(),300)},2500);
     }
     
-    // Exponer funciones globalmente
+    // Exportar funciones al scope global
     window.generateLink = generateLink;
-    window.openTikTok = openTikTok;
+    window.followTikTok = followTikTok;
     window.copyLink = copyLink;
     window.viewMyPage = viewMyPage;
     window.contactDeveloper = contactDeveloper;
@@ -624,21 +735,38 @@ Te amo muchísimo mi amor💖</textarea>
       document.getElementById('menu-overlay').classList.toggle('active');
     }
     
-    // Cerrar modals al hacer clic fuera
     document.getElementById('success-modal').addEventListener('click', (e) => {
       if(e.target.id === 'success-modal') closeModal('success-modal');
     });
-    document.getElementById('loading-modal').addEventListener('click', (e) => {
-      if(e.target.id === 'loading-modal') {
-        // No cerrar si está generando
+    
+    document.getElementById('tiktok-modal').addEventListener('click', (e) => {
+      if(e.target.id === 'tiktok-modal') {
+        if(!window.tiktokFollowed) {
+          showToast('💕 Primero sigue mi TikTok para desbloquear ✨');
+        }
       }
     });
     
-    // Escape para cerrar modals
+    // Cerrar modales con ESC
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Escape') {
+        if(document.getElementById('tiktok-modal').classList.contains('active')) {
+          if(window.tiktokFollowed) closeModal('tiktok-modal');
+        }
         if(document.getElementById('success-modal').classList.contains('active')) {
           closeModal('success-modal');
+        }
+        if(document.getElementById('loading-modal').classList.contains('active')) {
+          // No cerrar loading modal con ESC
+        }
+      }
+    });
+    
+    // Detectar retorno de TikTok
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && window.tiktokFollowed && !document.getElementById('success-modal').classList.contains('active')) {
+        if(document.getElementById('loading-modal').classList.contains('active')) {
+          // Ya está cargando, esperar a que completeGeneration() termine
         }
       }
     });
