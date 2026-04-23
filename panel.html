@@ -1,510 +1,374 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>✨ Personaliza tu Galaxia | BerMatCode</title>
-  <meta name="description" content="Crea tu galaxia personalizada con frases de cariño">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>✨ Personaliza tu Carta - Hello Kitty Yorchi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --bg-dark: #0a0a1a;
-      --bg-card: #13132a;
-      --bg-input: #1e1e3a;
-      --text: #f0f0ff;
-      --text-muted: #a0a0c0;
-      --border: #2a2a4a;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --glow: 0 0 20px rgba(99, 102, 241, 0.4);
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      font-family: 'Segoe UI', Georgia, serif;
-      background: var(--bg-dark);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe6f2 50%, #ffcce6 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px; position: relative; overflow-x: hidden;
+    }
+    
+    /* === ✨ Fondo animado === */
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background-image: 
-        radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(236,72,153,0.12) 0%, transparent 50%);
+        radial-gradient(circle at 20% 35%, rgba(255,105,180,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,20,147,0.1) 0%, transparent 50%);
+      z-index: -1; pointer-events: none;
+      animation: floatBg 20s ease-in-out infinite;
+    }
+    @keyframes floatBg { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+
+    /* === 🎀 Panel Principal === */
+    .panel-container {
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+      border-radius: 24px; padding: 25px; width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(255,105,180,0.3), 0 0 0 1px rgba(255,105,180,0.2);
+      border: 2px solid #ff69b4; position: relative; z-index: 10;
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .panel-header {
+      text-align: center; margin-bottom: 20px; padding-bottom: 15px;
+      border-bottom: 2px dashed #ffb6c1;
+    }
+    .panel-title {
+      font-family: 'Pacifico', cursive; font-size: 1.8rem; color: #ff1493;
+      text-shadow: 0 0 10px rgba(255,105,180,0.5); margin-bottom: 5px;
+    }
+    .panel-subtitle { font-size: 0.9rem; color: #777; }
+
+    /* === 📝 Formulario === */
+    .form-scroll {
+      max-height: 55vh; overflow-y: auto; padding-right: 5px;
+      scrollbar-width: thin; scrollbar-color: #ff69b4 #fff0f5;
+    }
+    .form-scroll::-webkit-scrollbar { width: 6px; }
+    .form-scroll::-webkit-scrollbar-track { background: #fff0f5; border-radius: 10px; }
+    .form-scroll::-webkit-scrollbar-thumb { background: #ff69b4; border-radius: 10px; }
+    .form-scroll::-webkit-scrollbar-thumb:hover { background: #ff1493; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block; font-weight: 600; margin-bottom: 6px; color: #555;
+      font-size: 0.95rem; display: flex; align-items: center; gap: 6px;
+    }
+    .form-group label i { color: #ff69b4; }
+    
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 11px 14px; border: 2px solid #ffb6c1;
+      border-radius: 12px; font-size: 0.95rem; background: #fff;
+      font-family: 'Roboto', sans-serif; transition: all 0.25s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: #ff1493; 
+      box-shadow: 0 0 0 4px rgba(255,20,147,0.15);
+      transform: translateY(-1px);
+    }
+    .form-group textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+    
+    .form-hint {
+      font-size: 0.78rem; color: #888; margin-top: 5px; display: block;
+      padding-left: 3px;
     }
     
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+    .image-inputs { display: flex; flex-direction: column; gap: 7px; }
+    .image-inputs input { font-size: 0.85rem; padding: 9px 12px; }
     
-    header {
-      text-align: center;
-      padding: 30px 20px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 30px;
-    }
-    
-    header h1 {
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      background: linear-gradient(135deg, #fff, #a78bfa, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-      text-shadow: var(--glow);
-    }
-    
-    header p {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-    }
-    
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 30px;
-    }
-    
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--glow), 0 8px 30px rgba(0,0,0,0.4);
-    }
-    
-    .card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-    }
-    
-    .card h3::before {
-      content: '';
-      width: 4px;
-      height: 20px;
-      background: linear-gradient(180deg, var(--primary), #f472b6);
-      border-radius: 2px;
-    }
-    
-    /* Phrase Management */
-    .phrase-list {
-      max-height: 280px;
-      overflow-y: auto;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--bg-input);
-    }
-    
-    .phrase-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      gap: 10px;
-    }
-    
-    .phrase-item:last-child { border-bottom: none; }
-    
-    .phrase-text {
-      flex: 1;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-    
-    .phrase-actions {
-      display: flex;
-      gap: 6px;
-    }
-    
-    .btn-icon {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      color: var(--text);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: all 0.15s;
-    }
-    
-    .btn-icon:hover { background: var(--primary); border-color: var(--primary); }
-    .btn-icon.danger:hover { background: var(--danger); border-color: var(--danger); }
-    
-    .phrase-input-group {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .phrase-input {
-      flex: 1;
-      padding: 10px 14px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    
-    .phrase-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
-    
+    .music-input input { font-size: 0.9rem; }
+
+    /* === 🎨 Botones === */
     .btn {
-      padding: 10px 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      width: 100%; padding: 13px; background: linear-gradient(135deg, #ff1493, #ff69b4);
+      color: white; border: none; border-radius: 14px; font-size: 1.05rem;
+      font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      font-family: 'Roboto', sans-serif; display: flex; align-items: center; 
+      justify-content: center; gap: 8px; margin-top: 8px;
+      position: relative; overflow: hidden;
     }
-    
-    .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    
-    .btn-secondary {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      color: var(--text);
+    .btn::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
     }
-    .btn-secondary:hover { background: var(--border); }
-    
-    .btn-success { background: var(--success); }
-    .btn-success:hover { background: #059669; }
-    
-    .btn-generate {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.1rem;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      margin-top: 10px;
+    .btn:hover::before { left: 100%; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255,20,147,0.5); }
+    .btn:active { transform: translateY(-1px); }
+    .btn:disabled { 
+      background: linear-gradient(135deg, #ccc, #ddd); 
+      cursor: not-allowed; transform: none; box-shadow: none; 
     }
-    
-    /* Color Pickers */
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+    .btn:disabled::before { display: none; }
+
+    .loading {
+      text-align: center; padding: 18px; color: #ff1493; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    
-    .color-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px;
-      background: var(--bg-input);
-      border-radius: 8px;
+    .loading i { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* === ✅ Ventana de Éxito (MODAL CENTRADO) === */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease;
     }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
     
-    .color-item label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      flex: 1;
-    }
-    
-    .color-item input[type="color"] {
-      width: 40px;
-      height: 32px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: transparent;
-    }
-    
-    .color-item input[type="color"]::-webkit-color-swatch {
-      border: 2px solid var(--border);
-      border-radius: 4px;
-    }
-    
-    /* Preview */
-    .preview-box {
-      background: #000;
-      border-radius: 12px;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .success-modal {
+      background: linear-gradient(145deg, #ffffff, #fff5f8);
+      border: 3px solid #28a745; border-radius: 20px;
+      padding: 25px; width: 100%; max-width: 420px;
+      text-align: center; color: #155724;
+      box-shadow: 0 25px 80px rgba(40,167,69,0.4);
+      transform: scale(0.9) translateY(20px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
       position: relative;
-      overflow: hidden;
-      border: 1px solid var(--border);
     }
-    
-    .preview-stars {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
-        radial-gradient(2px 2px at 80px 60px, #fff, transparent),
-        radial-gradient(1px 1px at 150px 40px, #fff, transparent),
-        radial-gradient(2px 2px at 200px 90px, #fff, transparent);
-      animation: twinkle 3s infinite;
-    }
-    
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; }
-    }
-    
-    .preview-text {
-      position: relative;
-      z-index: 2;
-      font-size: 1.1rem;
-      text-align: center;
-      padding: 10px 20px;
-      background: rgba(20,20,40,0.8);
-      border-radius: 10px;
-      border: 1px solid rgba(255,215,0,0.4);
-      text-shadow: 0 0 10px currentColor;
-    }
-    
-    /* Result Modal */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
-    
-    .modal.active { display: flex; }
-    
-    .modal-content {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      animation: modalIn 0.3s ease;
-    }
-    
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.95) translateY(20px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    
-    .modal h3 {
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-      color: var(--success);
-    }
-    
-    .link-box {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      margin: 20px 0;
-      word-break: break-all;
-      font-family: monospace;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-    
-    .copy-btn {
-      margin-top: 10px;
+    .modal-overlay.active .success-modal {
+      transform: scale(1) translateY(0); opacity: 1;
     }
     
     .modal-close {
-      margin-top: 20px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
+      position: absolute; top: 12px; right: 15px;
+      background: none; border: none; font-size: 1.5rem;
+      color: #666; cursor: pointer; transition: 0.2s;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { background: #ffe6f2; color: #ff1493; transform: rotate(90deg); }
+    
+    .success-modal .check-icon {
+      width: 70px; height: 70px; background: linear-gradient(135deg, #28a745, #20c997);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 15px; box-shadow: 0 10px 30px rgba(40,167,69,0.4);
+      animation: popIn 0.5s ease;
+    }
+    @keyframes popIn { 0%{transform:scale(0);} 50%{transform:scale(1.2);} 100%{transform:scale(1);} }
+    .success-modal .check-icon i { font-size: 2rem; color: white; }
+    
+    .success-modal h3 {
+      font-family: 'Pacifico', cursive; font-size: 1.4rem; color: #ff1493;
+      margin-bottom: 8px;
+    }
+    .success-modal p { font-size: 0.95rem; line-height: 1.5; margin-bottom: 18px; }
+    .success-modal strong { color: #ff1493; font-weight: 700; }
+    
+    .share-box {
+      background: #f8f9fa; border: 2px dashed #28a745; border-radius: 12px;
+      padding: 12px; margin: 12px 0; text-align: left;
+    }
+    .share-box label { font-size: 0.85rem; color: #555; font-weight: 500; display: block; margin-bottom: 6px; }
+    .share-url {
+      font-size: 0.82rem; color: #333; word-break: break-all;
+      background: white; padding: 8px 10px; border-radius: 8px;
+      border: 1px solid #dee2e6; font-family: monospace;
     }
     
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--success);
-      padding: 14px 20px;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 2000;
-      animation: slideIn 0.3s ease;
+    /* === 🎨 Botones del Modal (Cuadrados con efectos) === */
+    .modal-buttons {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;
     }
     
-    .toast.active { display: block; }
-    .toast.error { border-left-color: var(--danger); }
-    
-    @keyframes slideIn {
-      from { transform: translateX(100px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .btn-square {
+      padding: 12px 10px; border: none; border-radius: 14px;
+      cursor: pointer; font-size: 0.9rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.25s ease; font-family: 'Roboto', sans-serif;
+      position: relative; overflow: hidden;
     }
-    
-    /* Responsive */
-    @media (max-width: 640px) {
-      .grid { grid-template-columns: 1fr; }
-      .color-grid { grid-template-columns: 1fr; }
-      .phrase-input-group { flex-direction: column; }
+    .btn-square::after {
+      content: ''; position: absolute; inset: 0; border-radius: 14px;
+      padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      pointer-events: none; opacity: 0; transition: opacity 0.2s;
     }
+    .btn-square:hover::after { opacity: 1; }
     
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-input); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    .btn-copy {
+      background: linear-gradient(135deg, #6c757d, #5a6268); color: white;
+    }
+    .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,117,125,0.4); }
+    
+    .btn-view {
+      background: linear-gradient(135deg, #28a745, #20c997); color: white;
+    }
+    .btn-view:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(40,167,69,0.4); }
+
+    /* === 🎀 Decoración === */
+    .decoration {
+      position: absolute; width: 60px; height: auto; opacity: 0.6; pointer-events: none;
+      animation: float 3s ease-in-out infinite;
+    }
+    .dec-1 { top: 30px; left: 30px; animation-delay: 0s; }
+    .dec-2 { bottom: 40px; right: 30px; animation-delay: 1s; width: 45px; }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+    /* === ☰ Menú Info === */
+    #menu-btn {
+      position: absolute; top: 15px; right: 15px; width: 38px; height: 38px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+      cursor: pointer; z-index: 100; background: rgba(255,255,255,0.9); 
+      border-radius: 10px; border: 2px solid #ff69b4; transition: 0.3s;
+    }
+    #menu-btn:hover { background: #fff0f5; transform: scale(1.05); }
+    #menu-btn span { width: 20px; height: 2px; background: #ff1493; border-radius: 2px; }
+    
+    #menu-panel {
+      position: fixed; top: 0; right: -280px; width: 250px; height: 100vh;
+      background: white; padding: 65px 18px 20px; z-index: 99;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.15); transition: right 0.3s ease;
+      font-family: 'Roboto', sans-serif;
+    }
+    #menu-panel.active { right: 0; }
+    #menu-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 98;
+      display: none; opacity: 0; transition: opacity 0.3s;
+    }
+    #menu-overlay.active { display: block; opacity: 1; }
+    
+    .menu-title {
+      font-size: 1.25rem; font-weight: 700; color: #ff1493; text-align: center;
+      padding-bottom: 12px; border-bottom: 2px solid #ff69b4; margin-bottom: 15px;
+    }
+    .menu-item {
+      padding: 10px 14px; margin: 5px 0; border-radius: 10px;
+      background: #fff0f5; display: flex; align-items: center; gap: 10px;
+      color: #555; font-size: 0.92rem; font-weight: 500;
+    }
+    .menu-item i { color: #ff69b4; width: 22px; text-align: center; }
+    .dev-footer {
+      margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ffb6c1;
+      text-align: center; font-size: 0.85rem; color: #777;
+    }
+    .dev-footer strong { color: #ff1493; }
+
+    @media (max-width: 520px) {
+      .panel-container { padding: 20px 18px; border-radius: 20px; }
+      .panel-title { font-size: 1.5rem; }
+      .modal-buttons { grid-template-columns: 1fr; }
+      .decoration { width: 40px; }
+      .dec-2 { width: 32px; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>✨ Personaliza tu Galaxia</h1>
-      <p>Crea una experiencia única con tus palabras y colores favoritos</p>
-    </header>
 
-    <div class="grid">
-      <!-- Frases -->
-      <div class="card">
-        <h3>💬 Frases de Cariño</h3>
-        <div class="phrase-list" id="phraseList">
-          <!-- Phrases will be injected here -->
-        </div>
-        <div class="phrase-input-group">
-          <input type="text" class="phrase-input" id="newPhrase" placeholder="Escribe una nueva frase..." maxlength="50">
-          <button class="btn" onclick="addPhrase()">➕ Agregar</button>
-        </div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
-          💡 Tip: Usa emojis para más expresión ❤️✨🌟
-        </p>
-      </div>
+  <!-- === 🎀 Decoración flotante === -->
+  <img class="decoration dec-1" src="https://i.postimg.cc/7P2vYZFL/1760657847691-removebg-preview.png" alt="✨">
+  <img class="decoration dec-2" src="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png" alt="🎀">
 
-      <!-- Colores -->
-      <div class="card">
-        <h3>🎨 Colores</h3>
-        <div class="color-grid">
-          <div class="color-item">
-            <label>Texto frases</label>
-            <input type="color" id="textColor" value="#fff9e6">
-          </div>
-          <div class="color-item">
-            <label>Sombra texto</label>
-            <input type="color" id="shadowColor" value="#FFD700">
-          </div>
-          <div class="color-item">
-            <label>Brillo núcleo</label>
-            <input type="color" id="glowColor" value="#FFD700">
-          </div>
-          <div class="color-item">
-            <label>Corazones</label>
-            <input type="color" id="heartColor" value="#87CEEB">
-          </div>
-          <div class="color-item">
-            <label>Fondo galaxia</label>
-            <input type="color" id="bgColor" value="#000000">
-          </div>
-          <div class="color-item">
-            <label>Estrellas</label>
-            <input type="color" id="starColor" value="#FFFFFF">
-          </div>
-        </div>
-      </div>
-
-      <!-- Vista Previa -->
-      <div class="card">
-        <h3>👁️ Vista Previa</h3>
-        <div class="preview-box">
-          <div class="preview-stars"></div>
-          <div class="preview-text" id="previewText">Te amo ❤️</div>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 12px;">
-          Así se verá una frase en tu galaxia personalizada
-        </p>
-      </div>
-
-      <!-- Configuración -->
-      <div class="card">
-        <h3>⚙️ Configuración</h3>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
-          Opciones adicionales para tu galaxia
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <input type="checkbox" id="enableHearts" checked style="width: 18px; height: 18px;">
-            <span style="font-size: 0.95rem;">Activar corazones al tocar 💙</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <input type="checkbox" id="enableMusic" checked style="width: 18px; height: 18px;">
-            <span style="font-size: 0.95rem;">Activar música de fondo 🎵</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <input type="checkbox" id="enableRotation" checked style="width: 18px; height: 18px;">
-            <span style="font-size: 0.95rem;">Rotación automática de la galaxia 🌀</span>
-          </label>
-        </div>
-        <p style="font-size: 0.8rem; color: var(--warning); margin-top: 15px; padding: 10px; background: rgba(245,158,11,0.1); border-radius: 8px;">
-          🔒 La personalización de imagen del núcleo está disponible solo para usuarios activos.
-        </p>
-      </div>
-    </div>
-
-    <!-- Botón Generar -->
-    <div style="text-align: center; margin-bottom: 40px;">
-      <button class="btn btn-generate" onclick="generateGalaxy()">
-        ✨ Generar mi Galaxia Personalizada
-      </button>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 12px;">
-        Se creará un enlace único que podrás compartir 💫
-      </p>
+  <!-- === ☰ Menú Info === -->
+  <div id="menu-btn" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+  <div id="menu-overlay" onclick="toggleMenu()"></div>
+  <div id="menu-panel">
+    <div class="menu-title">⚙️ Información</div>
+    <div class="menu-item"><i class="fas fa-code"></i> Desarrollado por BerMatCode</div>
+    <div class="menu-item"><i class="fas fa-gift"></i> Proyecto 100% gratuito</div>
+    <div class="menu-item"><i class="fas fa-heart"></i> Hecho con 💖 para ti</div>
+    <div class="menu-item"><i class="fas fa-shield-alt"></i> Datos seguros en Firebase</div>
+    <div class="dev-footer">
+      <strong>BerMatCode</strong><br>
+      © 2026 • Todos los derechos reservados
     </div>
   </div>
 
-  <!-- Modal Resultado -->
-  <div class="modal" id="resultModal">
-    <div class="modal-content">
-      <h3>🎉 ¡Tu Galaxia está lista!</h3>
-      <p style="color: var(--text-muted); margin-bottom: 15px;">
-        Comparte este enlace con quien quieras sorprender:
-      </p>
-      <div class="link-box" id="generatedLink">https://...</div>
-      <button class="btn btn-success copy-btn" onclick="copyLink()">📋 Copiar Enlace</button>
-      <br>
-      <button class="btn modal-close" onclick="closeModal()">Cerrar</button>
+  <!-- === 📝 Panel de Personalización === -->
+  <div class="panel-container">
+    <div class="panel-header">
+      <div class="panel-title">✨ Personaliza tu Carta ✨</div>
+      <div class="panel-subtitle">Edita o conserva los valores preescritos 💕</div>
+    </div>
+    
+    <div class="form-scroll">
+      <div class="form-group">
+        <label for="custom-title"><i class="fas fa-font"></i> Título de tu carta:</label>
+        <input type="text" id="custom-title" maxlength="60" value="💘Mi Yorchi💖">
+        <small class="form-hint">💡 Puedes editar o dejar el texto por defecto</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="custom-message"><i class="fas fa-pen-fancy"></i> Tu mensaje especial:</label>
+        <textarea id="custom-message">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
+
+Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
+
+Te amo muchísimo mi amorsita💖</textarea>
+        <small class="form-hint">💡 Edita o conserva el mensaje preescrito</small>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-images"></i> Imágenes flotantes (URLs - opcional):</label>
+        <div class="image-inputs">
+          <input type="url" id="img1" placeholder="Imagen 1" 
+            value="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png">
+          <input type="url" id="img2" placeholder="Imagen 2 (opcional)" value="">
+          <input type="url" id="img3" placeholder="Imagen 3 (opcional)" value="">
+        </div>
+        <small class="form-hint">* Deja vacío para usar solo la imagen por defecto</small>
+      </div>
+      
+      <div class="form-group music-input">
+        <label><i class="fas fa-music"></i> Música de fondo (URL MP3 - opcional):</label>
+        <input type="url" id="music-url" placeholder="Tu canción MP3"
+          value="https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3">
+        <small class="form-hint">* Deja vacío para usar la música por defecto</small>
+      </div>
+    </div>
+    
+    <button class="btn" id="generate-btn" onclick="generateLink()">
+      <i class="fas fa-magic"></i> Generar mi Link Personalizado
+    </button>
+    
+    <div id="loading" class="loading" style="display:none;">
+      <i class="fas fa-spinner"></i> Creando tu link mágico...
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast">Mensaje de notificación</div>
+  <!-- === ✅ Modal de Éxito (CENTRADO) === -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="success-modal">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div class="check-icon"><i class="fas fa-check"></i></div>
+      <h3>¡Éxito Total! 🎉</h3>
+      <p><strong>Tu detalle ha sido generado con éxito.</strong><br>
+      Ya está registrado en nuestra base de datos de <strong>BerMatCode</strong> 💾✨</p>
+      
+      <div class="share-box">
+        <label>🔗 Tu link para compartir:</label>
+        <div class="share-url" id="share-url"></div>
+      </div>
+      
+      <div class="modal-buttons">
+        <button class="btn-square btn-copy" onclick="copyLink()">
+          <i class="fas fa-copy"></i> Copiar
+        </button>
+        <button class="btn-square btn-view" onclick="viewMyPage()">
+          <i class="fas fa-eye"></i> Ver mi Página
+        </button>
+      </div>
+    </div>
+  </div>
 
-  <!-- Firebase SDK -->
+  <!-- === Firebase SDK === -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDbciIRfI7X3srvZylbR0a93z8CyVBN-kU",
       authDomain: "personalizados-2026.firebaseapp.com",
@@ -514,221 +378,91 @@
       appId: "1:5347756837:web:6c238c8d24d02453bc68cc"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    window.firebaseDB = db;
+    window.generatedMessageId = null;
 
-    // Default phrases (masculine version)
-    const defaultPhrases = [
-      "Te amo ❤️","Mi amor 💖","Mi vida 🌟","Mi rey 👑","Mi cielo ☁️",
-      "Mi sol ☀️","Corazón 💓","Precioso 😍","Hermoso 🌸","Dulzura 🍯",
-      "Cariño 💕","Mi todo ✨","Mi paz 🕊️","Mi luz 💫","Mi estrella 🌠",
-      "Mi mundo 🌍","Mi alegría 😊","Mi sueño 💭","Mi fuerza 💪","Mi calma 🧘",
-      "Mi eterno ♾️","Mi siempre 🤍","Mi encanto 💖","Mi tesoro 💎","Mi razón 💞",
-      "Eres único 🌹","Mi inspiración ✨","Mi fortuna 🍀","Mi magia 🔮","Mi sueño dorado 💫",
-      "Mi alegría diaria 😊","Mi complemento 🧩","Mi aventura 🗺️","Mi refugio 🏠","Mi melodía 🎵",
-      "Mi poema 📜","Mi arte 🎨","Mi victoria 🏆","Mi esperanza 🕊️","Mi destino 🧭",
-      "Mi guerrero ⚔️","Mi caballero 🤴","Mi campeón 🏅","Mi orgullo 💙","Mi compañero 🤝"
-    ];
+    window.generateLink = async function() {
+      const title = document.getElementById('custom-title').value.trim() || '💘Mi Yorchi💖';
+      const message = document.getElementById('custom-message').value.trim();
+      const musicUrl = document.getElementById('music-url').value.trim();
+      const images = [
+        document.getElementById('img1').value.trim(),
+        document.getElementById('img2').value.trim(),
+        document.getElementById('img3').value.trim()
+      ].filter(url => url && url.trim() !== '');
 
-    // State
-    let phrases = [...defaultPhrases];
-    let config = {
-      textColor: '#fff9e6',
-      shadowColor: '#FFD700',
-      glowColor: '#FFD700',
-      heartColor: '#87CEEB',
-      bgColor: '#000000',
-      starColor: '#FFFFFF',
-      enableHearts: true,
-      enableMusic: true,
-      enableRotation: true
-    };
+      if (!message) { alert('💌 Por favor, escribe tu mensaje especial'); return; }
 
-    // DOM Elements
-    const phraseList = document.getElementById('phraseList');
-    const newPhraseInput = document.getElementById('newPhrase');
-    const previewText = document.getElementById('previewText');
-    const toast = document.getElementById('toast');
-    const resultModal = document.getElementById('resultModal');
-    const generatedLink = document.getElementById('generatedLink');
-
-    // Render phrases
-    function renderPhrases() {
-      phraseList.innerHTML = '';
-      phrases.forEach((phrase, index) => {
-        const item = document.createElement('div');
-        item.className = 'phrase-item';
-        item.innerHTML = `
-          <span class="phrase-text">${escapeHtml(phrase)}</span>
-          <div class="phrase-actions">
-            <button class="btn-icon" onclick="movePhrase(${index}, -1)" title="Subir">↑</button>
-            <button class="btn-icon" onclick="movePhrase(${index}, 1)" title="Bajar">↓</button>
-            <button class="btn-icon danger" onclick="removePhrase(${index})" title="Eliminar">✕</button>
-          </div>
-        `;
-        phraseList.appendChild(item);
-      });
-      updatePreview();
-    }
-
-    // Add phrase
-    function addPhrase() {
-      const text = newPhraseInput.value.trim();
-      if (!text) {
-        showToast('Escribe una frase primero', true);
-        return;
-      }
-      if (phrases.length >= 60) {
-        showToast('Máximo 60 frases permitidas', true);
-        return;
-      }
-      phrases.push(text);
-      newPhraseInput.value = '';
-      renderPhrases();
-      showToast('✅ Frase agregada');
-    }
-
-    // Remove phrase
-    function removePhrase(index) {
-      if (phrases.length <= 1) {
-        showToast('Debe haber al menos 1 frase', true);
-        return;
-      }
-      phrases.splice(index, 1);
-      renderPhrases();
-      showToast('🗑️ Frase eliminada');
-    }
-
-    // Move phrase up/down
-    function movePhrase(index, direction) {
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= phrases.length) return;
-      [phrases[index], phrases[newIndex]] = [phrases[newIndex], phrases[index]];
-      renderPhrases();
-    }
-
-    // Update preview
-    function updatePreview() {
-      if (phrases.length > 0) {
-        previewText.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-      }
-      previewText.style.color = config.textColor;
-      previewText.style.textShadow = `0 0 10px ${config.shadowColor}, 0 0 20px ${config.shadowColor}`;
-    }
-
-    // Color pickers
-    document.querySelectorAll('input[type="color"]').forEach(input => {
-      input.addEventListener('input', (e) => {
-        const id = e.target.id;
-        config[id] = e.target.value;
-        updatePreview();
-      });
-    });
-
-    // Checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.addEventListener('change', (e) => {
-        config[e.target.id] = e.target.checked;
-      });
-    });
-
-    // Generate galaxy
-    async function generateGalaxy() {
-      if (phrases.length === 0) {
-        showToast('Agrega al menos una frase', true);
-        return;
-      }
-
-      const btn = document.querySelector('.btn-generate');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ Generando...';
-      btn.disabled = true;
+      document.getElementById('generate-btn').disabled = true;
+      document.getElementById('loading').style.display = 'flex';
 
       try {
-        const configData = {
-          phrases: phrases,
-          colors: {
-            textColor: config.textColor,
-            shadowColor: config.shadowColor,
-            glowColor: config.glowColor,
-            heartColor: config.heartColor,
-            bgColor: config.bgColor,
-            starColor: config.starColor
-          },
-          options: {
-            enableHearts: config.enableHearts,
-            enableMusic: config.enableMusic,
-            enableRotation: config.enableRotation
-          },
-          createdAt: serverTimestamp(),
-          version: '1.0'
-        };
+        const docRef = await addDoc(collection(window.firebaseDB, "messages"), {
+          title, message, images,
+          musicUrl: musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3',
+          createdAt: serverTimestamp()
+        });
 
-        const docRef = await addDoc(collection(db, 'galaxyConfigs'), configData);
-        const link = `${window.location.origin}/index.html?config=${docRef.id}`;
+        window.generatedMessageId = docRef.id;
+        const shareUrl = `${window.location.origin}${window.location.pathname.replace('panel.html','index.html')}?id=${docRef.id}`;
         
-        generatedLink.textContent = link;
-        resultModal.classList.add('active');
-        showToast('✨ Galaxia generada exitosamente');
+        document.getElementById('share-url').textContent = shareUrl;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('success-modal').classList.add('active');
+        document.getElementById('generate-btn').disabled = false;
         
       } catch (error) {
-        console.error('Error:', error);
-        showToast('❌ Error al generar: ' + error.message, true);
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        console.error("Error:", error);
+        alert('❌ Error al crear tu link. Intenta de nuevo.');
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generate-btn').disabled = false;
       }
-    }
+    };
 
-    // Copy link
-    function copyLink() {
-      const link = generatedLink.textContent;
-      navigator.clipboard.writeText(link).then(() => {
-        showToast('📋 Enlace copiado al portapapeles');
+    window.copyLink = function() {
+      const url = document.getElementById('share-url').textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('🔗 Link copiado ✨');
       }).catch(() => {
-        showToast('❌ No se pudo copiar', true);
+        const ta = document.createElement('textarea'); ta.value = url;
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta); showToast('🔗 Link copiado');
       });
-    }
+    };
 
-    // Close modal
-    function closeModal() {
-      resultModal.classList.remove('active');
-    }
+    window.viewMyPage = function() {
+      if (window.generatedMessageId) {
+        window.location.href = `index.html?id=${window.generatedMessageId}`;
+      }
+    };
 
-    // Toast notification
-    function showToast(message, isError = false) {
-      toast.textContent = message;
-      toast.className = 'toast active' + (isError ? ' error' : '');
-      setTimeout(() => toast.classList.remove('active'), 3000);
-    }
+    window.closeModal = function() {
+      document.getElementById('success-modal').classList.remove('active');
+    };
 
-    // Escape HTML
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+        background:#333;color:white;padding:10px 20px;border-radius:30px;
+        font-size:0.9rem;z-index:3000;animation:slideUp 0.3s ease;`;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},2000);
     }
+  </script>
 
-    // Event listeners
-    newPhraseInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') addPhrase();
+  <script>
+    function toggleMenu() {
+      document.getElementById('menu-panel').classList.toggle('active');
+      document.getElementById('menu-btn').classList.toggle('active');
+      document.getElementById('menu-overlay').classList.toggle('active');
+    }
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('success-modal').addEventListener('click', (e) => {
+      if(e.target.id === 'success-modal') closeModal();
     });
-
-    resultModal.addEventListener('click', (e) => {
-      if (e.target === resultModal) closeModal();
-    });
-
-    // Initialize
-    renderPhrases();
-
-    // Expose functions globally for inline onclick
-    window.addPhrase = addPhrase;
-    window.removePhrase = removePhrase;
-    window.movePhrase = movePhrase;
-    window.generateGalaxy = generateGalaxy;
-    window.copyLink = copyLink;
-    window.closeModal = closeModal;
   </script>
 </body>
 </html>
