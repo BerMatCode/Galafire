@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>✨ Panel BerMatCode — Personaliza tu Galaxia</title>
+  <meta name="description" content="Crea tu galaxia personalizada con frases de cariño">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  
+  <style>
+    :root {
+      --primary: #FFD700;
+      --secondary: #4169E1;
+      --accent: #FF69B4;
+      --dark: #0a0a2e;
+      --darker: #000015;
+      --text: #fff9e6;
+      --text-dim: #aaa;
+      --success: #00d4aa;
+      --error: #ff6b6b;
+      --card-bg: rgba(20, 20, 50, 0.85);
+      --border: rgba(255, 215, 0, 0.3);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Segoe UI', 'Georgia', serif;
+      background: radial-gradient(ellipse at top, var(--dark) 0%, var(--darker) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, rgba(10,10,46,0.95), rgba(0,0,21,0.98));
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(255,215,0,0.5);
+    }
+    
+    .logo span { font-size: 1.8rem; }
+    
+    .auth-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--secondary), #6a5acd);
+      color: white;
+      box-shadow: 0 4px 15px rgba(65,105,225,0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(65,105,225,0.6);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #00b894);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255,215,0,0.1);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* ===== MAIN ===== */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+    
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    .card-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+    }
+    
+    /* ===== PHRASES ===== */
+    .phrase-input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .phrase-input {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    
+    .phrase-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
+    }
+    
+    .phrase-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+    
+    .phrase-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      background: rgba(255,215,0,0.15);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    
+    .phrase-tag:hover {
+      background: rgba(255,215,0,0.25);
+    }
+    
+    .phrase-tag .remove {
+      cursor: pointer;
+      color: var(--error);
+      font-weight: bold;
+      padding: 0 0.2rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .phrase-tag .remove:hover { opacity: 1; }
+    
+    /* ===== COLORS ===== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    
+    .color-item label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    
+    .color-input {
+      width: 100%;
+      height: 40px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+    }
+    
+    .color-input::-webkit-color-swatch {
+      border: none;
+      border-radius: 6px;
+    }
+    
+    .color-input::-moz-color-swatch {
+      border: none;
+      border-radius: 6px;
+    }
+    
+    /* ===== PREVIEW ===== */
+    .preview-box {
+      background: linear-gradient(135deg, #000 0%, #1a1a3e 100%);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+    
+    .preview-text {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+      text-shadow: 0 0 10px currentColor;
+    }
+    
+    .preview-core {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--primary), var(--secondary));
+      margin: 1rem 0;
+      box-shadow: 0 0 30px var(--primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--primary); }
+      50% { transform: scale(1.1); box-shadow: 0 0 50px var(--secondary); }
+    }
+    
+    /* ===== LINK GENERATION ===== */
+    .link-output {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      word-break: break-all;
+      margin: 1rem 0;
+    }
+    
+    .link-output a {
+      color: var(--success);
+      text-decoration: none;
+    }
+    
+    .link-output a:hover { text-decoration: underline; }
+    
+    /* ===== NOTIFICATIONS ===== */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error { border-left: 4px solid var(--error); }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* ===== LOADING ===== */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* ===== UTILS ===== */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 1rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255,215,0,0.1);
+      margin-top: 2rem;
+    }
+    
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <span>✨</span> BerMatCode Panel
+      </div>
+      <div class="auth-section" id="authSection">
+        <button class="btn btn-outline" id="signInBtn">🔐 Iniciar Sesión</button>
+        <span id="userEmail" class="hidden"></span>
+        <button class="btn btn-outline hidden" id="signOutBtn">Cerrar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Left Column: Configuration -->
+    <div>
+      <!-- Phrases Section -->
+      <div class="card">
+        <h2 class="card-title">💬 Frases Personalizadas</h2>
+        <p style="color:var(--text-dim);margin-bottom:1rem;font-size:0.9rem;">
+          Selecciona, añade o elimina frases para tu galaxia. Máximo 50 frases.
+        </p>
+        
+        <div class="phrase-input-group">
+          <input type="text" class="phrase-input" id="newPhrase" 
+                 placeholder="Ej: Mi tesoro 💎" maxlength="50">
+          <button class="btn btn-primary" id="addPhraseBtn">➕ Añadir</button>
+        </div>
+        
+        <div class="phrase-list" id="phraseList">
+          <!-- Phrases will be injected here -->
+        </div>
+        
+        <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+          <button class="btn btn-outline" id="loadDefaultsBtn">🔄 Cargar Predeterminadas</button>
+          <button class="btn btn-outline" id="clearAllBtn">🗑️ Limpiar Todo</button>
+        </div>
+      </div>
+
+      <!-- Colors Section -->
+      <div class="card">
+        <h2 class="card-title">🎨 Paleta de Colores</h2>
+        <p style="color:var(--text-dim);margin-bottom:1rem;font-size:0.9rem;">
+          Personaliza los colores de tu galaxia.
+        </p>
+        
+        <div class="color-grid">
+          <div class="color-item">
+            <label>✨ Primario (brillo)</label>
+            <input type="color" class="color-input" id="colorPrimary" value="#FFD700">
+          </div>
+          <div class="color-item">
+            <label>🌌 Secundario (sombras)</label>
+            <input type="color" class="color-input" id="colorSecondary" value="#4169E1">
+          </div>
+          <div class="color-item">
+            <label>💖 Acento (detalles)</label>
+            <input type="color" class="color-input" id="colorAccent" value="#FF69B4">
+          </div>
+          <div class="color-item">
+            <label>📝 Texto de frases</label>
+            <input type="color" class="color-input" id="colorText" value="#fff9e6">
+          </div>
+          <div class="color-item">
+            <label>🌑 Fondo</label>
+            <input type="color" class="color-input" id="colorBackground" value="#000000">
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Section (Hidden for now) -->
+      <div class="card" id="advancedSection" style="display:none;">
+        <h2 class="card-title">⚙️ Opciones Avanzadas <span style="font-size:0.8rem;color:var(--accent);">(Solo activos)</span></h2>
+        
+        <div class="mb-1">
+          <label style="display:block;margin-bottom:0.4rem;">🖼️ Imagen del Núcleo</label>
+          <input type="url" class="phrase-input" id="coreImageUrl" 
+                 placeholder="https://ejemplo.com/imagen.png"
+                 style="width:100%;margin-bottom:0.5rem;">
+          <small style="color:var(--text-dim);display:block;">
+            URL directa de imagen (PNG/JPG recomendado, máx 512x512px)
+          </small>
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:0.4rem;">🎵 Música Personalizada</label>
+          <input type="url" class="phrase-input" id="musicUrl" 
+                 placeholder="https://raw.githubusercontent.com/.../audio.mp3"
+                 style="width:100%;">
+          <small style="color:var(--text-dim);display:block;margin-top:0.3rem;">
+            Debe ser URL directa (raw) de archivo MP3
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Preview & Generate -->
+    <div>
+      <!-- Preview Card -->
+      <div class="card">
+        <h2 class="card-title">👁️ Vista Previa</h2>
+        <div class="preview-box">
+          <div class="preview-core"></div>
+          <div class="preview-text" id="previewPhrase1">Mi amor 💖</div>
+          <div class="preview-text" id="previewPhrase2" style="font-size:0.9rem;color:var(--text-dim);">
+            + <span id="phraseCount">0</span> frases más
+          </div>
+        </div>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin-top:1rem;text-align:center;">
+          * La vista real incluirá animación 3D completa
+        </p>
+      </div>
+
+      <!-- Generate Card -->
+      <div class="card">
+        <h2 class="card-title">🚀 Generar Galaxia</h2>
+        
+        <div id="notSignedIn" class="text-center" style="padding:1rem;">
+          <p style="color:var(--text-dim);margin-bottom:1rem;">
+            Inicia sesión para guardar y compartir tu galaxia personalizada.
+          </p>
+          <button class="btn btn-primary" id="signInBtn2">🔐 Iniciar Sesión con Google</button>
+        </div>
+        
+        <div id="signedIn" class="hidden">
+          <button class="btn btn-success" id="generateBtn" style="width:100%;padding:1rem;font-size:1.1rem;">
+            ✨ Generar Mi Galaxia Personalizada
+          </button>
+          
+          <div id="generating" class="hidden text-center" style="padding:1rem;">
+            <span class="loading"></span>
+            <span>Creando tu galaxia...</span>
+          </div>
+          
+          <div id="result" class="hidden mt-2">
+            <p style="margin-bottom:0.5rem;">✅ ¡Tu galaxia está lista!</p>
+            <div class="link-output">
+              🔗 <a href="#" target="_blank" id="galaxyLink">https://bermatcode.page.link/g/xxxxx</a>
+            </div>
+            <button class="btn btn-outline" id="copyLinkBtn" style="width:100%;">
+              📋 Copiar Enlace
+            </button>
+            <button class="btn btn-outline mt-2" id="previewBtn" style="width:100%;">
+              👁️ Previsualizar Ahora
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Card -->
+      <div class="card">
+        <h2 class="card-title">ℹ️ Información</h2>
+        <ul style="font-size:0.9rem;color:var(--text-dim);padding-left:1.2rem;line-height:1.8;">
+          <li>Tu galaxia será pública y accesible por enlace</li>
+          <li>Las frases se distribuyen en 6 anillos orbitales</li>
+          <li>Los colores afectan brillo, sombras y efectos</li>
+          <li>Funciona en móvil, tablet y escritorio</li>
+          <li>Requiere WebGL (Chrome/Firefox/Edge)</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      Creado con 💫 por <a href="https://bermatcode.page.link" target="_blank">BerMatCode</a> 
+      • <a href="#" id="rulesLink">Ver Reglas de Firebase</a>
+    </p>
+  </footer>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <script>
+    // ===== CONFIGURACIÓN FIREBASE =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbciIRfI7X3srvZylbR0a93z8CyVBN-kU",
+      authDomain: "personalizados-2026.firebaseapp.com",
+      projectId: "personalizados-2026",
+      storageBucket: "personalizados-2026.firebasestorage.app",
+      messagingSenderId: "5347756837",
+      appId: "1:5347756837:web:6c238c8d24d02453bc68cc"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    
+    // ===== ESTADO DE LA APLICACIÓN =====
+    const state = {
+      phrases: [
+        "Te amo ❤️","Mi amor 💖","Mi vida 🌟","Mi rey 👑","Mi cielo ☁️",
+        "Mi sol ☀️","Corazón 💓","Precioso 😍","Hermoso 🌸","Dulzura 🍯",
+        "Cariño 💕","Mi todo ✨","Mi paz 🕊️","Mi luz 💫","Mi estrella 🌠",
+        "Mi mundo 🌍","Mi alegría 😊","Mi sueño 💭","Mi fuerza 💪","Mi calma 🧘"
+      ],
+      colors: {
+        primary: '#FFD700',
+        secondary: '#4169E1', 
+        accent: '#FF69B4',
+        text: '#fff9e6',
+        background: '#000000'
+      },
+      coreImage: 'https://i.postimg.cc/QxcfhyQF/1756434414.png',
+      music: 'https://raw.githubusercontent.com/BerMatCode/Proyectos-personalizados/main/Multimedia/Galaxia.mp3',
+      user: null,
+      isActive: false
+    };
+
+    // ===== ELEMENTOS DOM =====
+    const els = {
+      phraseList: document.getElementById('phraseList'),
+      newPhrase: document.getElementById('newPhrase'),
+      addPhraseBtn: document.getElementById('addPhraseBtn'),
+      loadDefaultsBtn: document.getElementById('loadDefaultsBtn'),
+      clearAllBtn: document.getElementById('clearAllBtn'),
+      colorInputs: {
+        primary: document.getElementById('colorPrimary'),
+        secondary: document.getElementById('colorSecondary'),
+        accent: document.getElementById('colorAccent'),
+        text: document.getElementById('colorText'),
+        background: document.getElementById('colorBackground')
+      },
+      previewPhrase1: document.getElementById('previewPhrase1'),
+      previewPhrase2: document.getElementById('previewPhrase2'),
+      phraseCount: document.getElementById('phraseCount'),
+      generateBtn: document.getElementById('generateBtn'),
+      generating: document.getElementById('generating'),
+      result: document.getElementById('result'),
+      galaxyLink: document.getElementById('galaxyLink'),
+      copyLinkBtn: document.getElementById('copyLinkBtn'),
+      previewBtn: document.getElementById('previewBtn'),
+      signInBtn: document.getElementById('signInBtn'),
+      signInBtn2: document.getElementById('signInBtn2'),
+      signOutBtn: document.getElementById('signOutBtn'),
+      userEmail: document.getElementById('userEmail'),
+      notSignedIn: document.getElementById('notSignedIn'),
+      signedIn: document.getElementById('signedIn'),
+      advancedSection: document.getElementById('advancedSection'),
+      coreImageUrl: document.getElementById('coreImageUrl'),
+      musicUrl: document.getElementById('musicUrl'),
+      toastContainer: document.getElementById('toastContainer')
+    };
+
+    // ===== FUNCIONES DE UI =====
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span>${type === 'success' ? '✅' : '⚠️'}</span>
+        <span>${message}</span>
+      `;
+      els.toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function renderPhrases() {
+      els.phraseList.innerHTML = '';
+      state.phrases.forEach((phrase, index) => {
+        const tag = document.createElement('div');
+        tag.className = 'phrase-tag';
+        tag.innerHTML = `
+          ${phrase}
+          <span class="remove" data-index="${index}">×</span>
+        `;
+        els.phraseList.appendChild(tag);
+      });
+      
+      // Actualizar preview
+      if (state.phrases.length > 0) {
+        els.previewPhrase1.textContent = state.phrases[0];
+        els.phraseCount.textContent = state.phrases.length - 1;
+      }
+      
+      // Event listeners para eliminar
+      document.querySelectorAll('.phrase-tag .remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(btn.dataset.index);
+          state.phrases.splice(index, 1);
+          renderPhrases();
+          updatePreview();
+        });
+      });
+    }
+
+    function updatePreview() {
+      // Actualizar colores en preview
+      document.documentElement.style.setProperty('--primary', state.colors.primary);
+      document.documentElement.style.setProperty('--secondary', state.colors.secondary);
+      document.documentElement.style.setProperty('--accent', state.colors.accent);
+      
+      // Actualizar texto de preview
+      if (state.phrases.length > 0) {
+        els.previewPhrase1.textContent = state.phrases[0];
+        els.previewPhrase1.style.color = state.colors.text;
+        els.phraseCount.textContent = state.phrases.length - 1;
+      }
+    }
+
+    function updateColorInputs() {
+      els.colorInputs.primary.value = state.colors.primary;
+      els.colorInputs.secondary.value = state.colors.secondary;
+      els.colorInputs.accent.value = state.colors.accent;
+      els.colorInputs.text.value = state.colors.text;
+      els.colorInputs.background.value = state.colors.background;
+    }
+
+    // ===== EVENT LISTENERS - FRASES =====
+    els.addPhraseBtn.addEventListener('click', () => {
+      const phrase = els.newPhrase.value.trim();
+      if (phrase && state.phrases.length < 50) {
+        state.phrases.push(phrase);
+        els.newPhrase.value = '';
+        renderPhrases();
+        updatePreview();
+        showToast('✨ Frase añadida');
+      } else if (state.phrases.length >= 50) {
+        showToast('⚠️ Máximo 50 frases alcanzado', 'error');
+      }
+    });
+
+    els.newPhrase.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') els.addPhraseBtn.click();
+    });
+
+    els.loadDefaultsBtn.addEventListener('click', () => {
+      state.phrases = [
+        "Te amo ❤️","Mi amor 💖","Mi vida 🌟","Mi rey 👑","Mi cielo ☁️",
+        "Mi sol ☀️","Corazón 💓","Precioso 😍","Hermoso 🌸","Dulzura 🍯",
+        "Cariño 💕","Mi todo ✨","Mi paz 🕊️","Mi luz 💫","Mi estrella 🌠",
+        "Mi mundo 🌍","Mi alegría 😊","Mi sueño 💭","Mi fuerza 💪","Mi calma 🧘"
+      ];
+      renderPhrases();
+      updatePreview();
+      showToast('🔄 Frases predeterminadas cargadas');
+    });
+
+    els.clearAllBtn.addEventListener('click', () => {
+      if (confirm('¿Eliminar todas las frases?')) {
+        state.phrases = [];
+        renderPhrases();
+        updatePreview();
+        showToast('🗑️ Todas las frases eliminadas');
+      }
+    });
+
+    // ===== EVENT LISTENERS - COLORES =====
+    Object.entries(els.colorInputs).forEach(([key, input]) => {
+      input.addEventListener('input', (e) => {
+        state.colors[key] = e.target.value;
+        updatePreview();
+      });
+    });
+
+    // ===== AUTENTICACIÓN FIREBASE =====
+    auth.onAuthStateChanged((user) => {
+      state.user = user;
+      
+      if (user) {
+        // Verificar si es usuario activo
+        db.ref(`users/${user.uid}`).once('value').then(snapshot => {
+          const userData = snapshot.val();
+          state.isActive = userData?.isActive === true;
+          
+          // Mostrar UI de usuario logueado
+          els.signInBtn.classList.add('hidden');
+          els.signInBtn2.classList.add('hidden');
+          els.signOutBtn.classList.remove('hidden');
+          els.userEmail.classList.remove('hidden');
+          els.userEmail.textContent = user.email;
+          els.notSignedIn.classList.add('hidden');
+          els.signedIn.classList.remove('hidden');
+          
+          // Mostrar opciones avanzadas si es activo
+          if (state.isActive) {
+            els.advancedSection.style.display = 'block';
+            showToast('🌟 ¡Eres usuario activo! Opciones avanzadas disponibles');
+          }
+        });
+      } else {
+        // UI de usuario no logueado
+        els.signInBtn.classList.remove('hidden');
+        els.signInBtn2.classList.remove('hidden');
+        els.signOutBtn.classList.add('hidden');
+        els.userEmail.classList.add('hidden');
+        els.notSignedIn.classList.remove('hidden');
+        els.signedIn.classList.add('hidden');
+        els.advancedSection.style.display = 'none';
+        state.isActive = false;
+      }
+    });
+
+    function signIn() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          showToast('✅ Sesión iniciada correctamente');
+          // Registrar usuario si es nuevo
+          const user = result.user;
+          db.ref(`users/${user.uid}`).set({
+            email: user.email,
+            isActive: false, // Por defecto no activo
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          showToast('⚠️ Error al iniciar sesión: ' + error.message, 'error');
+        });
+    }
+
+    function signOut() {
+      auth.signOut().then(() => {
+        showToast('👋 Sesión cerrada');
+      });
+    }
+
+    els.signInBtn.addEventListener('click', signIn);
+    els.signInBtn2.addEventListener('click', signIn);
+    els.signOutBtn.addEventListener('click', signOut);
+
+    // ===== GENERAR GALAXIA =====
+    async function generateGalaxy() {
+      if (!state.user) {
+        showToast('⚠️ Debes iniciar sesión primero', 'error');
+        return;
+      }
+      
+      // Validar
+      if (state.phrases.length === 0) {
+        showToast('⚠️ Añade al menos una frase', 'error');
+        return;
+      }
+      
+      // Mostrar loading
+      els.generateBtn.disabled = true;
+      els.generating.classList.remove('hidden');
+      els.result.classList.add('hidden');
+      
+      try {
+        // Generar ID único
+        const galaxyId = 'g_' + Math.random().toString(36).substr(2, 9);
+        
+        // Preparar configuración
+        const config = {
+          phrases: state.phrases,
+          colors: state.colors,
+          coreImage: state.isActive ? (els.coreImageUrl.value || state.coreImage) : state.coreImage,
+          music: state.isActive ? (els.musicUrl.value || state.music) : state.music
+        };
+        
+        // Guardar en Firebase
+        await db.ref(`galaxias/${galaxyId}`).set({
+          config: config,
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          creator: state.user.uid
+        });
+        
+        // Generar enlace
+        const baseUrl = window.location.href.replace('panel.html', 'index.html');
+        const galaxyUrl = `${baseUrl}?g=${galaxyId}`;
+        
+        // Mostrar resultado
+        els.galaxyLink.href = galaxyUrl;
+        els.galaxyLink.textContent = galaxyUrl;
+        els.result.classList.remove('hidden');
+        
+        showToast('✨ ¡Galaxia generada exitosamente!');
+        
+      } catch (error) {
+        console.error('Error generando galaxia:', error);
+        showToast('⚠️ Error: ' + error.message, 'error');
+      } finally {
+        els.generateBtn.disabled = false;
+        els.generating.classList.add('hidden');
+      }
+    }
+
+    els.generateBtn.addEventListener('click', generateGalaxy);
+
+    // ===== COPIAR ENLACE =====
+    els.copyLinkBtn.addEventListener('click', () => {
+      const url = els.galaxyLink.href;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('📋 Enlace copiado al portapapeles');
+      }).catch(() => {
+        showToast('⚠️ No se pudo copiar el enlace', 'error');
+      });
+    });
+
+    // ===== PREVISUALIZAR =====
+    els.previewBtn.addEventListener('click', () => {
+      const url = els.galaxyLink.href;
+      if (url && url !== '#') {
+        window.open(url, '_blank');
+      } else {
+        showToast('⚠️ Genera tu galaxia primero', 'error');
+      }
+    });
+
+    // ===== REGLAS DE FIREBASE =====
+    document.getElementById('rulesLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      const rules = `{
+  "rules": {
+    "galaxias": {
+      "$id": {
+        ".read": true,
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['config', 'createdAt', 'creator'])"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    }
+  }
+}`;
+      alert('Reglas de Firebase:\n\n' + rules);
+    });
+
+    // ===== INICIALIZACIÓN =====
+    function init() {
+      renderPhrases();
+      updateColorInputs();
+      updatePreview();
+      
+      // Cargar configuración guardada si existe
+      if (localStorage.getItem('bermatcode_draft')) {
+        try {
+          const draft = JSON.parse(localStorage.getItem('bermatcode_draft'));
+          if (draft.phrases) state.phrases = draft.phrases;
+          if (draft.colors) state.colors = { ...state.colors, ...draft.colors };
+          renderPhrases();
+          updateColorInputs();
+          updatePreview();
+          showToast('📦 Borrador cargado');
+        } catch(e) {
+          console.warn('No se pudo cargar borrador');
+        }
+      }
+      
+      // Auto-guardar borrador
+      let saveTimeout;
+      const autoSave = () => {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          localStorage.setItem('bermatcode_draft', JSON.stringify({
+            phrases: state.phrases,
+            colors: state.colors
+          }));
+        }, 1000);
+      };
+      
+      // Listeners para auto-guardado
+      els.newPhrase.addEventListener('input', autoSave);
+      Object.values(els.colorInputs).forEach(input => {
+        input.addEventListener('input', autoSave);
+      });
+    }
+
+    // Iniciar
+    document.addEventListener('DOMContentLoaded', init);
+    
+  </script>
+</body>
+</html>
