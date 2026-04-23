@@ -21,6 +21,16 @@
       background: inherit; filter: blur(2px) brightness(0.9); z-index: -2;
     }
 
+    /* === Ocultar contenido cuando hay error === */
+    body.error-active .message-box,
+    body.error-active #follower-astronaut,
+    body.error-active .credits,
+    body.error-active #battery-indicator,
+    body.error-active #menu-btn,
+    body.error-active .floating-img {
+      display: none !important;
+    }
+
     /* === ☰ Menú === */
     #menu-btn {
       position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
@@ -163,11 +173,77 @@
     }
     @keyframes loadBar { to { width: 100%; } }
 
+    /* === ⚠️ Modal de Error === */
+    #error-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      display: none; align-items: center; justify-content: center;
+      z-index: 7000; padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    #error-modal.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .error-card {
+      background: linear-gradient(145deg, #fff0f5, #ffe4ec);
+      border-radius: 20px; padding: 25px 20px;
+      max-width: 420px; width: 100%; text-align: center;
+      box-shadow: 0 15px 50px rgba(255,20,147,0.5);
+      border: 2px solid #ff69b4; position: relative;
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    
+    .error-icon {
+      font-size: 3rem; color: #ff1493; margin-bottom: 15px;
+      animation: bounceIcon 1s ease infinite;
+    }
+    @keyframes bounceIcon { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+    
+    .error-title {
+      font-family: 'Pacifico', cursive; font-size: 1.5rem; color: #ff1493;
+      margin-bottom: 12px; text-shadow: 0 0 8px rgba(255,105,180,0.5);
+    }
+    
+    .error-message {
+      font-family: 'Roboto', sans-serif; font-size: 0.95rem; color: #555;
+      line-height: 1.5; margin-bottom: 18px;
+    }
+    
+    .error-input {
+      width: 100%; padding: 10px 14px; border: 2px solid #ffb6c1;
+      border-radius: 10px; font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem; margin-bottom: 15px; background: #fff;
+      transition: border-color 0.3s;
+    }
+    .error-input:focus { outline: none; border-color: #ff1493; }
+    .error-input::placeholder { color: #aaa; }
+    
+    .error-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; background: linear-gradient(135deg, #ff1493, #ff69b4);
+      color: white; border: none; border-radius: 25px;
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 0.9rem; cursor: pointer; margin: 5px;
+      text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .error-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,20,147,0.4); }
+    .error-btn.whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); }
+    .error-btn.create { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+    
+    .error-credits {
+      margin-top: 20px; padding-top: 15px;
+      border-top: 1px dashed #ffb6c1;
+      font-family: 'Pacifico', cursive; font-size: 0.85rem;
+      color: #ff1493; text-shadow: 0 0 5px rgba(255,105,180,0.3);
+    }
+
     @media (max-width: 768px) {
       .message-box { padding: 14px 12px; }
       .title { font-size: 1.6rem; } .message { font-size: 1rem; }
       #follower-astronaut { width: 50px; } .corner-cake { width: 45px; }
       .loading-logo { font-size: 1.8rem; }
+      .error-card { padding: 20px 15px; }
+      .error-title { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -177,6 +253,30 @@
   <div id="loading-screen">
     <div class="loading-logo">BerMatCode</div>
     <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  </div>
+
+  <!-- === ⚠️ Modal de Error === -->
+  <div id="error-modal">
+    <div class="error-card">
+      <div class="error-icon">⚠</div>
+      <div class="error-title">𝗔𝗿𝗰𝗵𝗶𝘃𝗼 𝗻𝗼 𝗲𝗻𝗰𝗼𝗻𝘁𝗿𝗮𝗱𝗼</div>
+      <div class="error-message">
+        Su archivo no ha sido encontrado. Es posible que se haya dañado el link o quizás mi desarrollador lo ha eliminado.
+      </div>
+      <div class="error-message" style="font-weight:500;color:#ff1493;margin-bottom:8px;">
+        ¿Informar a mi desarrollador?
+      </div>
+      <input type="text" class="error-input" id="recipient-name" placeholder="Nombre del archivo personalizado" maxlength="50">
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;">
+        <a id="whatsapp-btn" class="error-btn whatsapp" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+        </a>
+        <a href="https://bermatcode.github.io/Galafire/panel.html" class="error-btn create">
+          <i class="fas fa-plus"></i> Crear Detalle
+        </a>
+      </div>
+      <div class="error-credits">𖤍𝐁𝐞𝐫𝐌𝐚𝐭𝐂𝐨𝐝𝐞𖤍</div>
+    </div>
   </div>
 
   <!-- === ☰ Menú (Info del Desarrollador) === -->
@@ -242,37 +342,79 @@ Te amo muchísimo mi amorsita💖</div>
     window.firebaseDB = db;
     window.customImages = [];
 
+    // === Función para mostrar error ===
+    function showErrorModal() {
+      // Ocultar loading
+      const loading = document.getElementById('loading-screen');
+      loading.classList.add('hidden');
+      setTimeout(() => { loading.style.display = 'none'; }, 600);
+      
+      // 🔒 Ocultar TODO el contenido principal
+      document.body.classList.add('error-active');
+      
+      // Mostrar modal de error
+      const modal = document.getElementById('error-modal');
+      modal.classList.add('active');
+      
+      // Configurar botón de WhatsApp
+      const whatsappBtn = document.getElementById('whatsapp-btn');
+      const inputName = document.getElementById('recipient-name');
+      
+      // Actualizar link de WhatsApp cuando se escribe el nombre
+      function updateWhatsAppLink() {
+        const name = inputName.value.trim() || '.........';
+        const message = `*Hola AnthZz Berrocal mucho gusto*, tengo un inconveniente con mi detalle personalizado que estaba a nombre de *${name}*`;
+        const encodedMsg = encodeURIComponent(message);
+        whatsappBtn.href = `https://wa.me/51930569195?text=${encodedMsg}`;
+      }
+      
+      inputName.addEventListener('input', updateWhatsAppLink);
+      updateWhatsAppLink(); // Inicializar con valor por defecto
+      
+      // Marcar que hay error para detener efectos
+      window.hasError = true;
+    }
+
     // === Cargar mensaje desde Firebase ===
     async function loadCustomMessage() {
       const params = new URLSearchParams(window.location.search);
       const messageId = params.get('id');
       
-      if (messageId) {
-        try {
-          const docRef = doc(db, "messages", messageId);
-          const docSnap = await getDoc(docRef);
-          
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('display-title').textContent = data.title || '💘Mi Yorchi💖';
-            document.getElementById('display-message').textContent = data.message || '';
-            const musicUrl = data.musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
-            document.getElementById('bg-music').src = musicUrl;
-            if (data.images && data.images.length > 0) {
-              window.customImages = data.images.filter(url => url && url.trim() !== '');
-            }
-            // Ocultar loading y cambiar barra de navegación a rosado
-            hideLoadingAndShowContent();
-            playAudio();
-            return true;
-          }
-        } catch (error) {
-          console.error("Error cargando mensaje:", error);
-        }
+      // 🚫 Si NO hay ID en la URL → mostrar error inmediatamente
+      if (!messageId) {
+        showErrorModal();
+        return false;
       }
-      // Sin ID o error → mostrar contenido por defecto
-      hideLoadingAndShowContent();
-      return false;
+      
+      try {
+        const docRef = doc(db, "messages", messageId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          // ✅ Éxito: cargar contenido personalizado
+          const data = docSnap.data();
+          document.getElementById('display-title').textContent = data.title || '💘Mi Yorchi💖';
+          document.getElementById('display-message').textContent = data.message || '';
+          const musicUrl = data.musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
+          document.getElementById('bg-music').src = musicUrl;
+          if (data.images && data.images.length > 0) {
+            window.customImages = data.images.filter(url => url && url.trim() !== '');
+          }
+          // Ocultar loading y mostrar contenido normal
+          hideLoadingAndShowContent();
+          playAudio();
+          return true;
+        } else {
+          // ❌ Documento no encontrado → mostrar SOLO error
+          showErrorModal();
+          return false;
+        }
+      } catch (error) {
+        console.error("Error cargando mensaje:", error);
+        // ❌ Error en la carga → mostrar SOLO error
+        showErrorModal();
+        return false;
+      }
     }
 
     function hideLoadingAndShowContent() {
@@ -286,15 +428,20 @@ Te amo muchísimo mi amorsita💖</div>
     }
 
     window.loadCustomMessage = loadCustomMessage;
+    window.showErrorModal = showErrorModal;
   </script>
 
   <script>
     // === Inicialización ===
     window.addEventListener('load', async () => {
       await (typeof loadCustomMessage === 'function' ? loadCustomMessage() : Promise.resolve());
-      initBattery();
-      startAstronaut();
-      startFloatingImages();
+      
+      // 🎬 Solo iniciar efectos si NO hay error
+      if (!window.hasError) {
+        initBattery();
+        startAstronaut();
+        startFloatingImages();
+      }
     });
 
     // === Audio ===
@@ -302,7 +449,7 @@ Te amo muchísimo mi amorsita💖</div>
     let audioReady = false;
 
     async function playAudio() {
-      if (audioReady) return;
+      if (audioReady || window.hasError) return;
       try {
         await bg.load();
         bg.volume = 0.6;
@@ -316,6 +463,7 @@ Te amo muchísimo mi amorsita💖</div>
 
     // === Menú ===
     function toggleMenu() {
+      if (window.hasError) return; // Desactivar menú si hay error
       document.getElementById('menu-panel').classList.toggle('active');
       document.getElementById('menu-btn').classList.toggle('active');
       document.getElementById('menu-overlay').classList.toggle('active');
@@ -323,6 +471,8 @@ Te amo muchísimo mi amorsita💖</div>
 
     // === Batería ===
     async function initBattery() {
+      if (window.hasError) return;
+      
       const l = document.getElementById('battery-level');
       const p = document.getElementById('battery-percent');
       const c = document.getElementById('charging-icon');
@@ -349,8 +499,12 @@ Te amo muchísimo mi amorsita💖</div>
 
     // === Imágenes flotantes ===
     function startFloatingImages() {
+      if (window.hasError) return;
+      
       const defaultSrc = "https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png";
       setInterval(() => {
+        if (window.hasError) return;
+        
         const img = document.createElement('img');
         const src = window.customImages?.length > 0 
           ? window.customImages[Math.floor(Math.random() * window.customImages.length)]
@@ -371,6 +525,8 @@ Te amo muchísimo mi amorsita💖</div>
     astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
     
     function updatePos(e) {
+      if (window.hasError) return;
+      
       const x = e.clientX || (e.touches?.[0]?.clientX);
       const y = e.clientY || (e.touches?.[0]?.clientY);
       if (x != null) {
@@ -398,7 +554,11 @@ Te amo muchísimo mi amorsita💖</div>
 
     let lastSpark = 0;
     function startAstronaut() {
+      if (window.hasError) return;
+      
       function loop() {
+        if (window.hasError) return;
+        
         const dx = tx-ax, dy = ty-ay;
         ax += dx*0.08; ay += dy*0.08;
         astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
