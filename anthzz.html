@@ -14,9 +14,9 @@
       --primary:#0ea5e9;--primary-dark:#0284c7;--primary-light:#38bdf8;
       --glow:rgba(14,165,233,.25);
       --text:#0f172a;--text-sec:#475569;--text-muted:#94a3b8;
-      --border:#e2e8f0;--danger:#ef4444;--danger-bg:rgba(239,68,68,.08);
-      --success:#10b981;--success-bg:rgba(16,185,129,.08);
-      --warn:#f59e0b;--warn-bg:rgba(245,158,11,.08);
+      --border:#e2e8f0;--danger:#ef4444;--danger-bg:rgba(239,68,68,.12);
+      --success:#10b981;--success-bg:rgba(16,185,129,.12);
+      --warn:#f59e0b;--warn-bg:rgba(245,158,11,.12);
       --radius:16px;--shadow:0 4px 24px rgba(0,0,0,.06);
       --shadow-lg:0 12px 48px rgba(14,165,233,.12);
       --transition:all .25s cubic-bezier(.4,0,.2,1);
@@ -61,9 +61,9 @@
     .btn-p{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
     .btn-p:hover{box-shadow:0 4px 18px var(--glow)}
     .btn-d{background:var(--danger-bg);color:var(--danger)}
-    .btn-d:hover{background:rgba(239,68,68,.16)}
+    .btn-d:hover{background:rgba(239,68,68,.2)}
     .btn-s{background:var(--success-bg);color:var(--success)}
-    .btn-s:hover{background:rgba(16,185,129,.16)}
+    .btn-s:hover{background:rgba(16,185,129,.2)}
     .btn-i{background:var(--card);color:var(--primary);border:1.5px solid var(--border)}
     .btn-i:hover{border-color:var(--primary);background:var(--card-hover)}
 
@@ -85,6 +85,26 @@
     .card-left .meta{font-size:.76rem;color:var(--text-muted);display:flex;align-items:center;gap:10px;margin-bottom:7px}
     .card-left .meta>i{font-size:.5rem;color:var(--primary)}
     .card-left .prev{font-size:.84rem;color:var(--text-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    
+    /* TAGS - ETIQUETAS PERSISTENTES */
+    .tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+    .tag{font-size:.68rem;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:4px;user-select:none;font-weight:500}
+    .tag:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    
+    /* Estado NEUTRO (sin etiqueta seleccionada) */
+    .tag.neutral{background:var(--surface);border-color:var(--border);color:var(--text-muted)}
+    .tag.neutral:hover{border-color:var(--primary);color:var(--primary);background:var(--card)}
+    
+    /* Estado 24h - ROJO */
+    .tag.is-24h{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);font-weight:600}
+    .tag.is-24h:hover{background:rgba(239,68,68,.2)}
+    
+    /* Estado Permanente - VERDE */
+    .tag.is-permanent{background:var(--success-bg);border-color:var(--success);color:var(--success);font-weight:600}
+    .tag.is-permanent:hover{background:rgba(16,185,129,.2)}
+    
+    .tag i{font-size:.6rem}
+    
     .card-right{display:flex;flex-direction:column;gap:6px;min-width:105px}
     .card-right .btn{width:100%;justify-content:center;font-size:.76rem;padding:8px 10px}
     .empty{text-align:center;padding:70px 20px;color:var(--text-muted)}
@@ -111,11 +131,13 @@
     .ft{min-height:130px;resize:vertical;line-height:1.6}
     .hint{font-size:.74rem;color:var(--text-muted);margin-top:5px}
 
-    /* DETAIL VIEW MEJORADO */
+    /* DETAIL VIEW */
     .detail-hero{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-radius:14px;padding:22px;margin-bottom:20px;text-align:center}
     .detail-hero h2{font-size:1.2rem;font-weight:700;margin-bottom:8px}
     .detail-hero .time{font-size:.82rem;opacity:.9;display:flex;align-items:center;justify-content:center;gap:6px}
     .detail-hero .time i{font-size:.7rem}
+    .detail-status{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+    .detail-status .tag{cursor:default;font-size:.72rem;padding:5px 12px}
 
     .d-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
     .d-block .d-label{font-size:.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -162,7 +184,7 @@
     @keyframes sp{to{transform:rotate(360deg)}}
     .loader-page span{font-size:.84rem;color:var(--text-muted)}
 
-    /* PROCESSING OVERLAY (Save/Delete loading) */
+    /* PROCESSING OVERLAY */
     .proc-overlay{position:absolute;inset:0;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:20px;z-index:10;opacity:0;visibility:hidden;transition:all .2s ease}
     .proc-overlay.active{opacity:1;visibility:visible}
     .proc-overlay .p-ring{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:12px}
@@ -185,6 +207,7 @@
       .card-right{flex-direction:row;width:100%;min-width:0}
       .header-inner{padding:0 16px}
       .container{padding:20px 16px 60px}
+      .tags{margin-top:8px}
     }
   </style>
 </head>
@@ -242,7 +265,7 @@
     <div class="dev">By AnthZz Berrocal - Todos los derechos reservados</div>
   </div>
 
-  <!-- VIEW MODAL (MEJORADO) -->
+  <!-- VIEW MODAL -->
   <div class="ov" id="ovView">
     <div class="m-box">
       <div class="m-head">
@@ -363,6 +386,71 @@
     window.__items = [];
     window.__editId = null;
     window.__delId = null;
+    
+    // 🔹 CONFIGURACIÓN DE ETIQUETAS PERSISTENTES
+    const TAGS_KEY = "bmc_project_tags";
+    const BASE_LINK = "https://bermatcode.github.io/Galafire/index.html";
+
+    /* ==== GESTIÓN DE ETIQUETAS EN LOCALSTORAGE ==== */
+    
+    // Obtener estado completo de etiquetas
+    function loadTagsState() {
+      try {
+        const raw = localStorage.getItem(TAGS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch(e) {
+        console.warn("Error cargando etiquetas:", e);
+        return {};
+      }
+    }
+    
+    // Guardar estado de etiquetas
+    function saveTagsState(state) {
+      try {
+        localStorage.setItem(TAGS_KEY, JSON.stringify(state));
+        return true;
+      } catch(e) {
+        console.warn("Error guardando etiquetas:", e);
+        return false;
+      }
+    }
+    
+    // Obtener estado de un proyecto específico
+    function getProjectTagState(projectId) {
+      const state = loadTagsState();
+      return state[projectId] || null; // null, '24h', o 'permanent'
+    }
+    
+    // Alternar etiqueta de un proyecto (exclusión mutua)
+    function toggleProjectTag(projectId, type) {
+      const state = loadTagsState();
+      const current = state[projectId] || null;
+      
+      // Si ya está activo el mismo tipo, lo desactivamos (volver a neutro)
+      if (current === type) {
+        delete state[projectId];
+      } else {
+        // Activar nuevo tipo (automáticamente desactiva el anterior)
+        state[projectId] = type;
+      }
+      
+      saveTagsState(state);
+      return state[projectId]; // Retorna el nuevo estado
+    }
+    
+    // Obtener clase CSS para la etiqueta según estado
+    function getTagClass(projectId, type) {
+      const state = getProjectTagState(projectId);
+      if (state === type) {
+        return type === '24h' ? 'is-24h' : 'is-permanent';
+      }
+      return 'neutral';
+    }
+    
+    // Obtener icono para la etiqueta
+    function getTagIcon(type) {
+      return type === '24h' ? 'fa-clock' : 'fa-infinity';
+    }
 
     /* ---- AUTH ---- */
     window.__doLogin = function() {
@@ -403,26 +491,45 @@
       } catch(e) { toast("Error: " + e.message, "error"); }
     };
 
+    /* ---- RENDER LISTA CON ETIQUETAS PERSISTENTES ---- */
     window.renderList = function() {
       const term = (document.getElementById("searchInput").value || "").toLowerCase();
       const list = document.getElementById("msgList");
       const filtered = window.__items.filter(i =>
         (i.title || "").toLowerCase().includes(term) || (i.message || "").toLowerCase().includes(term)
       );
+      
       if (!filtered.length) {
         list.innerHTML = '<div class="empty"><i class="fas fa-inbox"></i><p>No hay mensajes</p></div>';
         return;
       }
+      
       list.innerHTML = filtered.map(i => {
         const t = i.createdAt?.toDate ? i.createdAt.toDate() : new Date();
         const ds = t.toLocaleDateString("es",{day:"2-digit",month:"short",year:"numeric"}) + " " + t.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
         const prev = (i.message || "").substring(0, 130);
+        
+        // 🔹 Obtener estado actual de etiquetas desde localStorage
+        const tag24hClass = getTagClass(i.id, '24h');
+        const tagPermClass = getTagClass(i.id, 'permanent');
+        
         return `
         <div class="card">
           <div class="card-left">
             <h3>${esc(i.title || "Sin titulo")}</h3>
             <div class="meta"><i class="fas fa-circle"></i>${ds}</div>
             <div class="prev">${esc(prev)}${i.message?.length > 130 ? "..." : ""}</div>
+            
+            <!-- ETIQUETAS PERSISTENTES -->
+            <div class="tags">
+              <span class="tag ${tag24hClass}" onclick="handleTagClick('${i.id}','24h')" title="🔴 24 horas: eliminar manualmente">
+                <i class="fas ${getTagIcon('24h')}"></i> 24h
+              </span>
+              <span class="tag ${tagPermClass}" onclick="handleTagClick('${i.id}','permanent')" title="🟢 Permanente: no eliminar">
+                <i class="fas ${getTagIcon('permanent')}"></i> Permanente
+              </span>
+            </div>
+            
           </div>
           <div class="card-right">
             <button class="btn btn-i" onclick="viewItem('${i.id}')"><i class="fas fa-eye"></i> Ver</button>
@@ -434,17 +541,47 @@
       }).join("");
     };
 
+    /* ---- MANEJO DE CLICK EN ETIQUETAS ---- */
+    window.handleTagClick = function(projectId, type) {
+      const newState = toggleProjectTag(projectId, type);
+      
+      // Feedback visual inmediato
+      const msg = type === '24h' 
+        ? (newState === '24h' ? '🔴 Marcado para eliminar en 24h' : '⚪ Etiqueta 24h removida')
+        : (newState === 'permanent' ? '🟢 Marcado como PERMANENTE' : '⚪ Etiqueta permanente removida');
+      
+      toast(msg, newState ? 'info' : 'success');
+      
+      // Re-renderizar para actualizar colores visualmente
+      renderList();
+    };
+
     /* ---- VIEW ---- */
     window.viewItem = function(id) {
       const i = window.__items.find(x => x.id === id);
       if (!i) return;
       const t = i.createdAt?.toDate ? i.createdAt.toDate() : new Date();
       const ts = t.toLocaleDateString("es",{weekday:"long",year:"numeric",month:"long",day:"numeric"}) + " — " + t.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+      
+      // 🔹 Obtener estado de etiquetas para mostrar en detalle
+      const tagState = getProjectTagState(id);
+      
       document.getElementById("viewBody").innerHTML = `
         <div class="detail-hero">
           <h2>${esc(i.title || "Sin titulo")}</h2>
           <div class="time"><i class="fas fa-calendar-days"></i>${ts}</div>
+          
+          <!-- Estado de etiquetas en vista de detalle -->
+          <div class="detail-status">
+            <span class="tag ${tagState === '24h' ? 'is-24h' : 'neutral'}" style="cursor:default">
+              <i class="fas fa-clock"></i> ${tagState === '24h' ? '✓ 24h' : '24h'}
+            </span>
+            <span class="tag ${tagState === 'permanent' ? 'is-permanent' : 'neutral'}" style="cursor:default">
+              <i class="fas fa-infinity"></i> ${tagState === 'permanent' ? '✓ Permanente' : 'Permanente'}
+            </span>
+          </div>
         </div>
+        
         <div class="d-block">
           <div class="d-label"><i class="fas fa-align-left"></i> Mensaje</div>
           <div class="d-val msg">${esc(i.message || "")}</div>
@@ -459,7 +596,7 @@
         </div>
         <div class="d-link-box">
           <div class="d-label"><i class="fas fa-link"></i> Link de acceso</div>
-          <a href="${location.origin}/index.html?id=${i.id}" target="_blank">${location.origin}/index.html?id=${i.id}</a>
+          <a href="${BASE_LINK}?id=${i.id}" target="_blank">${BASE_LINK}?id=${i.id}</a>
         </div>`;
       om("ovView");
     };
@@ -487,7 +624,6 @@
         updatedAt: serverTimestamp()
       };
       if (!data.message) { toast("El mensaje no puede estar vacio", "error"); return; }
-      // Mostrar loading 2 segundos
       document.getElementById("editProc").classList.add("active");
       try {
         await updateDoc(doc(db, "messages", id), data);
@@ -500,8 +636,24 @@
       }, 2000);
     });
 
-    /* ---- DELETE ---- */
+    /* ---- DELETE CON PROTECCIÓN DE ETIQUETAS ---- */
     window.askDel = function(id) {
+      const tagState = getProjectTagState(id);
+      
+      // 🔹 Protección especial si está marcado como permanente
+      if (tagState === 'permanent') {
+        if (!confirm("⚠️ ⚠️ ⚠️\n\nEste proyecto está marcado como 🟢 PERMANENTE.\n\n¿Estás 100% seguro de eliminarlo?\n\nEsta acción NO se puede deshacer.")) {
+          return;
+        }
+      }
+      
+      // 🔹 Recordatorio si está marcado para 24h
+      if (tagState === '24h') {
+        if (!confirm("🔴 Este proyecto está marcado para eliminar en 24h.\n\n¿Confirmas la eliminación ahora?")) {
+          return;
+        }
+      }
+      
       window.__delId = id;
       document.getElementById("delProc").classList.remove("active");
       om("ovDel");
@@ -513,6 +665,14 @@
       document.getElementById("delProc").classList.add("active");
       try {
         await deleteDoc(doc(db, "messages", id));
+        
+        // 🔹 Limpiar estado de etiquetas al eliminar
+        const tagsState = loadTagsState();
+        if (tagsState[id]) {
+          delete tagsState[id];
+          saveTagsState(tagsState);
+        }
+        
         window.__items = window.__items.filter(x => x.id !== id);
         renderList();
       } catch(e) { toast("Error: " + e.message, "error"); }
@@ -526,7 +686,10 @@
 
     /* ---- UTILS ---- */
     window.copyLnk = function(id) {
-      navigator.clipboard.writeText(`${location.origin}/index.html?id=${id}`).then(() => toast("Link copiado", "info")).catch(() => toast("No se pudo copiar", "error"));
+      const link = `${BASE_LINK}?id=${id}`;
+      navigator.clipboard.writeText(link)
+        .then(() => toast("🔗 Link copiado al portapapeles", "info"))
+        .catch(() => toast("❌ No se pudo copiar el link", "error"));
     };
 
     window.doAskLogout = function() { closeSettings(); om("ovLogout"); };
@@ -539,14 +702,19 @@
     window.doOpenSettings = function() { closeSettings(); om("ovSettings"); };
 
     window.doExport = function() {
-      const data = { exportDate: new Date().toISOString(), messages: window.__items.map(m => ({...m, createdAt: m.createdAt?.toDate?.toISOString() || null})) };
+      const tagsState = loadTagsState();
+      const data = { 
+        exportDate: new Date().toISOString(), 
+        tagsState: tagsState, // 🔹 Exportar también el estado de etiquetas
+        messages: window.__items.map(m => ({...m, createdAt: m.createdAt?.toDate?.toISOString() || null})) 
+      };
       const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `bermatcode-${new Date().toISOString().split("T")[0]}.json`;
+      a.download = `bermatcode-backup-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
-      toast("Datos exportados", "success");
+      toast("📦 Datos + etiquetas exportados", "success");
       closeSettings();
     };
 
@@ -561,22 +729,33 @@
       el.className = "toast show";
       if (type) el.classList.add("t" + type[0]);
       clearTimeout(el._t);
-      el._t = setTimeout(() => el.classList.remove("show"), 2800);
+      el._t = setTimeout(() => {
+        el.classList.remove("show");
+        el.classList.remove("ts", "te", "ti");
+      }, 2800);
     };
 
+    // Event listeners
     document.getElementById("searchInput").addEventListener("input", () => renderList());
     document.getElementById("loginPw").addEventListener("keydown", e => { if (e.key === "Enter") window.__doLogin(); });
     document.getElementById("loginBtn").addEventListener("click", window.__doLogin);
-    document.querySelectorAll(".ov").forEach(ov => { ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("on"); }); });
+    document.querySelectorAll(".ov").forEach(ov => { 
+      ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("on"); }); 
+    });
 
+    // Dropdown settings
     const setBtn = document.getElementById("setBtn");
     const setDrop = document.getElementById("setDrop");
     setBtn.addEventListener("click", e => { e.stopPropagation(); setDrop.classList.toggle("open"); });
     document.addEventListener("click", e => { if (!setDrop.contains(e.target) && e.target !== setBtn) setDrop.classList.remove("open"); });
     window.closeSettings = function() { setDrop.classList.remove("open"); };
 
-    setInterval(() => { if (localStorage.getItem("bmc_admin") === "1") doLoadData(); }, 5000);
+    // Auto-refresh cada 5 segundos (manteniendo etiquetas)
+    setInterval(() => { 
+      if (localStorage.getItem("bmc_admin") === "1") doLoadData(); 
+    }, 5000);
 
+    // Inicialización
     checkSession();
     document.getElementById("loader").classList.add("hide");
   </script>
