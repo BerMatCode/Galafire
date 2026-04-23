@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ffffff" />
   <title>Hello Kitty Yorchi - Carta Personalizada</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,16 +48,20 @@
     #menu-overlay.active { display: block; }
 
     .menu-title {
-      font-size: 1.4rem; font-weight: 700; color: #ff1493;
+      font-size: 1.2rem; font-weight: 700; color: #ff1493;
       border-bottom: 2px solid #ff69b4; padding-bottom: 12px; margin-bottom: 15px; text-align: center;
     }
     .menu-item {
-      font-size: 0.95rem; padding: 12px 15px; margin: 4px 0; border-radius: 8px;
+      font-size: 0.9rem; padding: 10px 15px; margin: 4px 0; border-radius: 8px;
       background: #fff0f5; display: flex; align-items: center; gap: 10px;
-      color: #444; font-weight: 500; transition: 0.2s;
+      color: #555; font-weight: 500;
     }
-    .menu-item:hover { background: #ffe6f2; transform: translateX(-5px); }
-    .menu-item i { color: #ff69b4; font-size: 1.1rem; width: 24px; text-align: center; }
+    .menu-item i { color: #ff69b4; font-size: 1rem; width: 24px; text-align: center; }
+    .dev-footer {
+      margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ffb6c1;
+      text-align: center; font-size: 0.85rem; color: #777;
+    }
+    .dev-footer strong { color: #ff1493; }
 
     /* === 🔋 Batería === */
     #battery-indicator {
@@ -80,7 +85,6 @@
       border-radius: 16px; padding: 18px 16px; text-align: center;
       box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 10; max-width: 85%; width: 80vw;
-      /* IMPORTANTE: Sin scroll, contenido se ajusta naturalmente */
     }
     .title {
       font-size: 2rem; font-weight: bold; margin-bottom: 10px;
@@ -91,7 +95,6 @@
     .message { 
       font-size: 1.2rem; line-height: 1.5; color: #fff; 
       text-shadow: 0 0 4px #000; white-space: pre-line; 
-      /* Sin overflow, deja que el contenido fluya naturalmente */
     }
     
     /* 🎂 Tarta en esquina */
@@ -132,47 +135,65 @@
       text-shadow: 0 0 5px #ff66ff, 0 0 10px #ff66ff; z-index: 20; pointer-events: none;
     }
 
-    /* === 🔄 Loading inicial === */
+    /* === 🔄 Pantalla de Carga (BerMatCode) === */
     #loading-screen {
-      position: fixed; inset: 0; background: linear-gradient(135deg, #ff1493, #ff69b4);
+      position: fixed; inset: 0; background: #ffffff;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 3000; color: white; font-family: 'Pacifico', cursive;
+      z-index: 5000;
     }
-    #loading-screen.hidden { display: none; }
-    .loader {
-      width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3);
-      border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;
-      margin-bottom: 15px;
+    #loading-screen.hidden { 
+      animation: fadeOutLoading 0.6s ease forwards;
     }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes fadeOutLoading { to { opacity: 0; visibility: hidden; } }
+    
+    .loading-logo {
+      font-family: 'Pacifico', cursive; font-size: 2.2rem; color: #ff1493;
+      text-shadow: 0 0 20px rgba(255,20,147,0.4);
+      animation: fadeInScale 0.8s ease;
+    }
+    @keyframes fadeInScale { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+    
+    .loading-bar {
+      width: 120px; height: 4px; background: #f0f0f0; border-radius: 10px;
+      margin-top: 15px; overflow: hidden;
+    }
+    .loading-bar-fill {
+      width: 0%; height: 100%; background: linear-gradient(90deg, #ff1493, #ff69b4);
+      border-radius: 10px; animation: loadBar 1.5s ease forwards;
+    }
+    @keyframes loadBar { to { width: 100%; } }
 
     @media (max-width: 768px) {
       .message-box { padding: 14px 12px; }
       .title { font-size: 1.6rem; } .message { font-size: 1rem; }
       #follower-astronaut { width: 50px; } .corner-cake { width: 45px; }
+      .loading-logo { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- === 🔄 Loading inicial === -->
+  <!-- === 🔄 Pantalla de Carga: BerMatCode === -->
   <div id="loading-screen">
-    <div class="loader"></div>
-    <div>Cargando tu carta especial... 💖</div>
+    <div class="loading-logo">BerMatCode</div>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
   </div>
 
-  <!-- === ☰ Menú === -->
+  <!-- === ☰ Menú (Info del Desarrollador) === -->
   <div id="menu-btn" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
   <div id="menu-overlay" onclick="toggleMenu()"></div>
   <div id="menu-panel">
-    <div class="menu-title">💗Yorchi💗</div>
-    <div class="menu-item"><i class="fas fa-crown"></i> Mi Reina</div>
-    <div class="menu-item"><i class="fas fa-heart"></i> Mi Amor</div>
-    <div class="menu-item"><i class="fas fa-star"></i> Mi Todo</div>
-    <div class="menu-item"><i class="fas fa-moon"></i> Mi Golosita</div>
-    <div class="menu-item"><i class="fas fa-infinity"></i> Siempre Juntos</div>
+    <div class="menu-title">⚙️ Información</div>
+    <div class="menu-item"><i class="fas fa-code"></i> Desarrollado por BerMatCode</div>
+    <div class="menu-item"><i class="fas fa-gift"></i> Este proyecto es gratuito</div>
+    <div class="menu-item"><i class="fas fa-heart"></i> Hecho con 💖 para ti</div>
+    <div class="menu-item"><i class="fas fa-shield-alt"></i> Datos seguros en Firebase</div>
+    <div class="dev-footer">
+      <strong>BerMatCode</strong><br>
+      © 2026 • Todos los derechos reservados
+    </div>
   </div>
 
   <!-- === 🔋 Batería === -->
@@ -199,7 +220,7 @@ Te amo muchísimo mi amorsita💖</div>
   <!-- === 👨‍🚀 Astronauta === -->
   <img id="follower-astronaut" src="https://i.postimg.cc/vHFJ1dyW/1760657793625-removebg-preview.png" alt="Astronauta">
 
-  <!-- === Audio (SOLO EN INDEX) === -->
+  <!-- === Audio === -->
   <audio id="bg-music" preload="auto" loop></audio>
 
   <!-- === Firebase SDK === -->
@@ -233,22 +254,15 @@ Te amo muchísimo mi amorsita💖</div>
           
           if (docSnap.exists()) {
             const data = docSnap.data();
-            
-            // Aplicar contenido personalizado
             document.getElementById('display-title').textContent = data.title || '💘Mi Yorchi💖';
             document.getElementById('display-message').textContent = data.message || '';
-            
-            // Configurar música (SOLO EN INDEX)
             const musicUrl = data.musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
             document.getElementById('bg-music').src = musicUrl;
-            
-            // Configurar imágenes flotantes
             if (data.images && data.images.length > 0) {
               window.customImages = data.images.filter(url => url && url.trim() !== '');
             }
-            
-            // Ocultar loading y reproducir música
-            document.getElementById('loading-screen').classList.add('hidden');
+            // Ocultar loading y cambiar barra de navegación a rosado
+            hideLoadingAndShowContent();
             playAudio();
             return true;
           }
@@ -256,10 +270,19 @@ Te amo muchísimo mi amorsita💖</div>
           console.error("Error cargando mensaje:", error);
         }
       }
-      
-      // Si no hay ID o error, mostrar contenido por defecto
-      document.getElementById('loading-screen').classList.add('hidden');
+      // Sin ID o error → mostrar contenido por defecto
+      hideLoadingAndShowContent();
       return false;
+    }
+
+    function hideLoadingAndShowContent() {
+      const loading = document.getElementById('loading-screen');
+      loading.classList.add('hidden');
+      setTimeout(() => { loading.style.display = 'none'; }, 600);
+      
+      // 🎨 Cambiar barra de navegador a rosado
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', '#ff1493');
     }
 
     window.loadCustomMessage = loadCustomMessage;
@@ -274,7 +297,7 @@ Te amo muchísimo mi amorsita💖</div>
       startFloatingImages();
     });
 
-    // === Audio (SOLO EN INDEX) ===
+    // === Audio ===
     const bg = document.getElementById('bg-music');
     let audioReady = false;
 
@@ -327,7 +350,6 @@ Te amo muchísimo mi amorsita💖</div>
     // === Imágenes flotantes ===
     function startFloatingImages() {
       const defaultSrc = "https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png";
-      
       setInterval(() => {
         const img = document.createElement('img');
         const src = window.customImages?.length > 0 
