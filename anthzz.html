@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#38bdf8" />
+  <title>BerMatCode — Panel Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#f0f5fa;--surface:#ffffff;--card:#f8fbff;--card-hover:#eef5ff;
+      --primary:#0ea5e9;--primary-dark:#0284c7;--primary-light:#38bdf8;
+      --glow:rgba(14,165,233,.25);
+      --text:#0f172a;--text-sec:#475569;--text-muted:#94a3b8;
+      --border:#e2e8f0;--danger:#ef4444;--danger-bg:rgba(239,68,68,.08);
+      --success:#10b981;--success-bg:rgba(16,185,129,.08);
+      --warn:#f59e0b;--warn-bg:rgba(245,158,11,.08);
+      --radius:16px;--shadow:0 4px 24px rgba(0,0,0,.06);
+      --shadow-lg:0 12px 48px rgba(14,165,233,.12);
+      --transition:all .25s cubic-bezier(.4,0,.2,1);
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+
+    /* LOGIN */
+    .login-page{position:fixed;inset:0;background:linear-gradient(140deg,#f0f5fa 0%,#e0f2fe 50%,#f0f5fa 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .login-page.hide{display:none}
+    .login-card{background:var(--surface);border-radius:22px;padding:48px 40px;width:400px;max-width:90vw;box-shadow:0 20px 60px rgba(14,165,233,.12);text-align:center;animation:fadeUp .5s ease;border:1.5px solid var(--border)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+    .login-icon{width:68px;height:68px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:1.6rem;color:#fff;box-shadow:0 10px 35px var(--glow)}
+    .login-card h1{font-size:1.5rem;font-weight:700;margin-bottom:4px}
+    .login-card p{color:var(--text-muted);font-size:.85rem;margin-bottom:26px}
+    .login-input{width:100%;padding:14px 18px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:.92rem;outline:none;transition:var(--transition);text-align:center}
+    .login-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--glow)}
+    .login-btn{width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:var(--transition)}
+    .login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px var(--glow)}
+    .login-btn:active{transform:translateY(0)}
+    .login-err{color:var(--danger);font-size:.78rem;margin-top:10px;min-height:16px}
+
+    /* APP */
+    .app{display:none}.app.active{display:block}
+
+    /* HEADER */
+    .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 24px}
+    .brand{font-weight:800;font-size:1.15rem;color:var(--primary);letter-spacing:-.5px}
+    .header-right{display:flex;align-items:center;gap:8px}
+    .auto-badge{font-size:.72rem;color:var(--text-muted);display:flex;align-items:center;gap:5px;padding:6px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border)}
+    .dot{width:7px;height:7px;background:var(--success);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border:none;border-radius:10px;font-size:.82rem;font-weight:500;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif;white-space:nowrap}
+    .btn:active{transform:scale(.96)}
+    .btn-g{background:transparent;color:var(--text-sec);border:1.5px solid var(--border)}
+    .btn-g:hover{border-color:var(--primary);color:var(--primary);background:var(--card)}
+    .btn-p{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
+    .btn-p:hover{box-shadow:0 4px 18px var(--glow)}
+    .btn-d{background:var(--danger-bg);color:var(--danger)}
+    .btn-d:hover{background:rgba(239,68,68,.16)}
+    .btn-s{background:var(--success-bg);color:var(--success)}
+    .btn-s:hover{background:rgba(16,185,129,.16)}
+    .btn-i{background:var(--card);color:var(--primary);border:1.5px solid var(--border)}
+    .btn-i:hover{border-color:var(--primary);background:var(--card-hover)}
+
+    /* CENTER CONTAINER */
+    .container{max-width:720px;margin:0 auto;padding:28px 20px 80px;display:flex;flex-direction:column;align-items:center}
+
+    /* SEARCH */
+    .search-wrap{width:100%;margin-bottom:24px;position:relative}
+    .search-wrap>i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem}
+    .search-inp{width:100%;padding:13px 16px 13px 42px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;outline:none;transition:var(--transition)}
+    .search-inp:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--glow)}
+
+    /* CARDS */
+    .list{width:100%;display:flex;flex-direction:column;gap:12px}
+    .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:var(--transition);width:100%}
+    .card:hover{box-shadow:var(--shadow-lg);border-color:var(--primary-light)}
+    .card-left{flex:1;min-width:0}
+    .card-left h3{font-size:.96rem;font-weight:600;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .card-left .meta{font-size:.76rem;color:var(--text-muted);display:flex;align-items:center;gap:10px;margin-bottom:7px}
+    .card-left .meta>i{font-size:.5rem;color:var(--primary)}
+    .card-left .prev{font-size:.84rem;color:var(--text-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .card-right{display:flex;flex-direction:column;gap:6px;min-width:105px}
+    .card-right .btn{width:100%;justify-content:center;font-size:.76rem;padding:8px 10px}
+    .empty{text-align:center;padding:70px 20px;color:var(--text-muted)}
+    .empty i{font-size:3rem;margin-bottom:16px;display:block;opacity:.15;color:var(--primary)}
+
+    /* MODALS */
+    .ov{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .25s ease}
+    .ov.on{opacity:1;visibility:visible}
+    .m-box{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;width:520px;max-width:94vw;max-height:85vh;overflow-y:auto;transform:translateY(20px) scale(.97);transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 60px rgba(0,0,0,.1)}
+    .ov.on .m-box{transform:translateY(0) scale(1)}
+    .m-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .m-head h3{font-size:.98rem;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .m-head h3>i{color:var(--primary)}
+    .m-x{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;border-radius:9px;background:transparent;color:var(--text-muted);font-size:1rem;cursor:pointer;transition:var(--transition)}
+    .m-x:hover{background:var(--card);color:var(--text)}
+    .m-body{padding:22px}
+    .m-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+    /* FORM */
+    .fg{margin-bottom:18px}
+    .fg label{display:block;font-size:.78rem;font-weight:600;color:var(--text-sec);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px}
+    .fi,.ft{width:100%;padding:12px 15px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:.88rem;font-family:'Inter',sans-serif;outline:none;transition:var(--transition)}
+    .fi:focus,.ft:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+    .ft{min-height:130px;resize:vertical;line-height:1.6}
+    .hint{font-size:.74rem;color:var(--text-muted);margin-top:5px}
+
+    /* DETAIL VIEW MEJORADO */
+    .detail-hero{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-radius:14px;padding:22px;margin-bottom:20px;text-align:center}
+    .detail-hero h2{font-size:1.2rem;font-weight:700;margin-bottom:8px}
+    .detail-hero .time{font-size:.82rem;opacity:.9;display:flex;align-items:center;justify-content:center;gap:6px}
+    .detail-hero .time i{font-size:.7rem}
+
+    .d-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+    .d-block .d-label{font-size:.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .d-block .d-label i{font-size:.7rem}
+    .d-block .d-val{font-size:.88rem;line-height:1.65;color:var(--text-sec);word-break:break-word}
+    .d-block .d-val.msg{white-space:pre-line;max-height:200px;overflow-y:auto}
+    .d-block .d-val a{color:var(--primary);text-decoration:none}
+    .d-block .d-val a:hover{text-decoration:underline}
+
+    .d-link-box{background:var(--card);border:1.5px solid var(--primary);border-radius:12px;padding:14px;text-align:center}
+    .d-link-box .d-label{justify-content:center;margin-bottom:8px}
+    .d-link-box a{color:var(--primary);font-size:.82rem;word-break:break-all;text-decoration:none}
+
+    /* CONFIRM */
+    .confirm-body{text-align:center;padding:32px 22px}
+    .confirm-body>i{font-size:2.5rem;margin-bottom:16px;display:block}
+    .confirm-body h4{font-size:1.05rem;margin-bottom:8px;color:var(--text)}
+    .confirm-body p{font-size:.85rem;color:var(--text-muted)}
+    .confirm-foot{display:flex;gap:8px;justify-content:center;padding:0 22px 22px}
+    .confirm-foot .btn{padding:10px 26px;font-size:.84rem}
+
+    /* SETTINGS */
+    .set-wrap{position:relative}
+    .set-drop{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.08);padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s ease;z-index:60}
+    .set-drop.open{opacity:1;visibility:visible;transform:translateY(0)}
+    .set-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:.84rem;color:var(--text-sec);cursor:pointer;transition:var(--transition);border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
+    .set-item:hover{background:var(--card);color:var(--primary)}
+    .set-item>i{width:16px;text-align:center;font-size:.85rem}
+    .set-item.danger{color:var(--danger)}
+    .set-item.danger:hover{background:var(--danger-bg)}
+    .set-div{height:1px;background:var(--border);margin:4px 8px}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:12px 22px;border-radius:12px;font-size:.84rem;font-weight:500;z-index:5000;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:8px;box-shadow:0 10px 35px rgba(0,0,0,.1);opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast.ts{border-color:var(--success);color:var(--success)}
+    .toast.te{border-color:var(--danger);color:var(--danger)}
+    .toast.ti{border-color:var(--primary);color:var(--primary)}
+
+    /* LOADER */
+    .loader-page{position:fixed;inset:0;background:var(--bg);z-index:5000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s}
+    .loader-page.hide{opacity:0;pointer-events:none}
+    .l-ring{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:14px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .loader-page span{font-size:.84rem;color:var(--text-muted)}
+
+    /* PROCESSING OVERLAY (Save/Delete loading) */
+    .proc-overlay{position:absolute;inset:0;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:20px;z-index:10;opacity:0;visibility:hidden;transition:all .2s ease}
+    .proc-overlay.active{opacity:1;visibility:visible}
+    .proc-overlay .p-ring{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:12px}
+    .proc-overlay span{font-size:.88rem;font-weight:600;color:var(--primary)}
+
+    /* FIXED CREDITS */
+    .credits{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-top:1px solid var(--border);text-align:center;padding:14px 20px;font-size:.8rem;color:var(--text-muted);z-index:40}
+    .credits strong{color:var(--primary);font-weight:700}
+    .credits .dev{font-size:.72rem;margin-top:3px;color:var(--text-sec)}
+
+    /* SETTINGS MODAL */
+    .s-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+    .s-row:last-child{border:none}
+    .s-row .s-label{font-size:.84rem;font-weight:500;color:var(--text);display:flex;align-items:center;gap:8px}
+    .s-row .s-label>i{color:var(--primary);width:18px;text-align:center}
+    .s-row .s-val{font-size:.82rem;color:var(--text-muted);text-align:right}
+
+    @media(max-width:600px){
+      .card{flex-direction:column;align-items:flex-start}
+      .card-right{flex-direction:row;width:100%;min-width:0}
+      .header-inner{padding:0 16px}
+      .container{padding:20px 16px 60px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div class="loader-page" id="loader"><div class="l-ring"></div><span>Conectando...</span></div>
+
+  <!-- LOGIN -->
+  <div class="login-page" id="loginPage">
+    <div class="login-card">
+      <div class="login-icon"><i class="fas fa-shield-halved"></i></div>
+      <h1>BerMatCode Admin</h1>
+      <p>Panel de administracion</p>
+      <input class="login-input" type="password" id="loginPw" placeholder="Ingresa la clave" autocomplete="off">
+      <button class="login-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Ingresar</button>
+      <div class="login-err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="app" id="app">
+    <header class="header">
+      <div class="header-inner">
+        <div class="brand">𖤍𝐁𝐞𝐫𝐌𝐚𝐭_𝐂𝐨𝐝𝐞𖤍</div>
+        <div class="header-right">
+          <div class="auto-badge"><div class="dot"></div>Auto 5s</div>
+          <div class="set-wrap">
+            <button class="btn btn-g" id="setBtn"><i class="fas fa-gear"></i></button>
+            <div class="set-drop" id="setDrop">
+              <button class="set-item" onclick="doOpenSettings()"><i class="fas fa-sliders"></i> Opciones</button>
+              <button class="set-item" onclick="doLoadData()"><i class="fas fa-arrows-rotate"></i> Actualizar datos</button>
+              <div class="set-div"></div>
+              <button class="set-item" onclick="doExport()"><i class="fas fa-download"></i> BerMatCode</button>
+              <div class="set-div"></div>
+              <button class="set-item danger" onclick="doAskLogout()"><i class="fas fa-right-from-bracket"></i> Cerrar sesion</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="search-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input class="search-inp" type="text" id="searchInput" placeholder="Buscar por titulo o mensaje...">
+      </div>
+      <div class="list" id="msgList"></div>
+    </div>
+  </div>
+
+  <!-- FIXED CREDITS -->
+  <div class="credits" id="credits" style="display:none">
+    <div><strong>𖤍DETALLES𖤍</strong></div>
+    <div class="dev">By AnthZz Berrocal - Todos los derechos reservados</div>
+  </div>
+
+  <!-- VIEW MODAL (MEJORADO) -->
+  <div class="ov" id="ovView">
+    <div class="m-box">
+      <div class="m-head">
+        <h3><i class="fas fa-eye"></i> Detalle</h3>
+        <button class="m-x" onclick="cm('ovView')"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="m-body" id="viewBody"></div>
+      <div class="m-foot">
+        <button class="btn btn-g" onclick="cm('ovView')"><i class="fas fa-xmark"></i> Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="ov" id="ovEdit">
+    <div class="m-box" style="position:relative">
+      <div class="proc-overlay" id="editProc"><div class="p-ring"></div><span>Guardando cambios...</span></div>
+      <div class="m-head">
+        <h3><i class="fas fa-pen-to-square"></i> Editar</h3>
+        <button class="m-x" onclick="cm('ovEdit')"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="m-body">
+        <div class="fg"><label>Titulo</label><input class="fi" id="eTitle"></div>
+        <div class="fg"><label>Mensaje</label><textarea class="ft" id="eMsg"></textarea></div>
+        <div class="fg"><label>Imagenes (URLs separadas por coma)</label><input class="fi" id="eImg"><div class="hint">Pega las URLs separadas por coma</div></div>
+        <div class="fg"><label>Musica (URL MP3)</label><input class="fi" id="eMusic"></div>
+      </div>
+      <div class="m-foot">
+        <button class="btn btn-g" onclick="cm('ovEdit')"><i class="fas fa-xmark"></i> Cancelar</button>
+        <button class="btn btn-p" id="saveBtn"><i class="fas fa-check"></i> Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE -->
+  <div class="ov" id="ovDel">
+    <div class="m-box" style="width:400px;position:relative">
+      <div class="proc-overlay" id="delProc"><div class="p-ring"></div><span>Eliminando...</span></div>
+      <div class="confirm-body">
+        <i class="fas fa-triangle-exclamation" style="color:var(--warn)"></i>
+        <h4>Eliminar Personalizado?</h4>
+        <p>Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="confirm-foot">
+        <button class="btn btn-g" onclick="cm('ovDel')">Cancelar</button>
+        <button class="btn btn-d" id="confirmDelBtn"><i class="fas fa-trash"></i> Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM LOGOUT -->
+  <div class="ov" id="ovLogout">
+    <div class="m-box" style="width:400px">
+      <div class="confirm-body">
+        <i class="fas fa-right-from-bracket" style="color:var(--primary)"></i>
+        <h4>Cerrar sesion?</h4>
+        <p>Se te pedira la clave para volver a ingresar.</p>
+      </div>
+      <div class="confirm-foot">
+        <button class="btn btn-g" onclick="cm('ovLogout')">Cancelar</button>
+        <button class="btn btn-p" id="confirmLogoutBtn"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="ov" id="ovSettings">
+    <div class="m-box">
+      <div class="m-head">
+        <h3><i class="fas fa-sliders"></i> Opciones</h3>
+        <button class="m-x" onclick="cm('ovSettings')"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="m-body">
+        <div class="s-row">
+          <div class="s-label"><i class="fas fa-clock"></i> Actualizacion</div>
+          <div class="s-val">Cada 5 segundos</div>
+        </div>
+        <div class="s-row">
+          <div class="s-label"><i class="fas fa-database"></i> Base de datos</div>
+          <div class="s-val">Firebase Firestore</div>
+        </div>
+        <div class="s-row">
+          <div class="s-label"><i class="fas fa-project-diagram"></i> Proyecto</div>
+          <div class="s-val">personalizados-2026</div>
+        </div>
+        <div class="s-row">
+          <div class="s-label"><i class="fas fa-code"></i> Desarrollador</div>
+          <div class="s-val">BerMatCode<br><span style="font-size:.74rem">AnthZz Berrocal</span></div>
+        </div>
+        <div class="s-row">
+          <div class="s-label"><i class="fas fa-copyright"></i> Licencia</div>
+          <div class="s-val">Gratuito &copy; 2026</div>
+        </div>
+      </div>
+      <div class="m-foot">
+        <button class="btn btn-g" onclick="cm('ovSettings')"><i class="fas fa-xmark"></i> Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey:"AIzaSyDbciIRfI7X3srvZylbR0a93z8CyVBN-kU",
+      authDomain:"personalizados-2026.firebaseapp.com",
+      projectId:"personalizados-2026",
+      storageBucket:"personalizados-2026.firebasestorage.app",
+      messagingSenderId:"5347756837",
+      appId:"1:5347756837:web:6c238c8d24d02453bc68cc"
+    });
+    const db = getFirestore(app);
+    window.__db = db;
+    window.__items = [];
+    window.__editId = null;
+    window.__delId = null;
+
+    /* ---- AUTH ---- */
+    window.__doLogin = function() {
+      const pw = document.getElementById("loginPw").value;
+      if (pw === "BerMatCode") {
+        localStorage.setItem("bmc_admin", "1");
+        document.getElementById("loginPage").classList.add("hide");
+        document.getElementById("app").classList.add("active");
+        document.getElementById("credits").style.display = "block";
+        document.getElementById("loginErr").textContent = "";
+        doLoadData();
+      } else {
+        document.getElementById("loginErr").textContent = "Clave incorrecta";
+        document.getElementById("loginPw").value = "";
+        document.getElementById("loginPw").focus();
+      }
+    };
+
+    function checkSession() {
+      if (localStorage.getItem("bmc_admin") === "1") {
+        document.getElementById("loginPage").classList.add("hide");
+        document.getElementById("app").classList.add("active");
+        document.getElementById("credits").style.display = "block";
+        doLoadData();
+      } else {
+        document.getElementById("loader").classList.add("hide");
+      }
+    }
+
+    /* ---- FIREBASE ---- */
+    window.doLoadData = async function() {
+      try {
+        const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        window.__items = [];
+        snap.forEach(d => window.__items.push({ id: d.id, ...d.data() }));
+        renderList();
+      } catch(e) { toast("Error: " + e.message, "error"); }
+    };
+
+    window.renderList = function() {
+      const term = (document.getElementById("searchInput").value || "").toLowerCase();
+      const list = document.getElementById("msgList");
+      const filtered = window.__items.filter(i =>
+        (i.title || "").toLowerCase().includes(term) || (i.message || "").toLowerCase().includes(term)
+      );
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty"><i class="fas fa-inbox"></i><p>No hay mensajes</p></div>';
+        return;
+      }
+      list.innerHTML = filtered.map(i => {
+        const t = i.createdAt?.toDate ? i.createdAt.toDate() : new Date();
+        const ds = t.toLocaleDateString("es",{day:"2-digit",month:"short",year:"numeric"}) + " " + t.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+        const prev = (i.message || "").substring(0, 130);
+        return `
+        <div class="card">
+          <div class="card-left">
+            <h3>${esc(i.title || "Sin titulo")}</h3>
+            <div class="meta"><i class="fas fa-circle"></i>${ds}</div>
+            <div class="prev">${esc(prev)}${i.message?.length > 130 ? "..." : ""}</div>
+          </div>
+          <div class="card-right">
+            <button class="btn btn-i" onclick="viewItem('${i.id}')"><i class="fas fa-eye"></i> Ver</button>
+            <button class="btn btn-s" onclick="editItem('${i.id}')"><i class="fas fa-pen"></i> Editar</button>
+            <button class="btn btn-g" onclick="copyLnk('${i.id}')"><i class="fas fa-link"></i> Copiar</button>
+            <button class="btn btn-d" onclick="askDel('${i.id}')"><i class="fas fa-trash"></i> Eliminar</button>
+          </div>
+        </div>`;
+      }).join("");
+    };
+
+    /* ---- VIEW ---- */
+    window.viewItem = function(id) {
+      const i = window.__items.find(x => x.id === id);
+      if (!i) return;
+      const t = i.createdAt?.toDate ? i.createdAt.toDate() : new Date();
+      const ts = t.toLocaleDateString("es",{weekday:"long",year:"numeric",month:"long",day:"numeric"}) + " — " + t.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+      document.getElementById("viewBody").innerHTML = `
+        <div class="detail-hero">
+          <h2>${esc(i.title || "Sin titulo")}</h2>
+          <div class="time"><i class="fas fa-calendar-days"></i>${ts}</div>
+        </div>
+        <div class="d-block">
+          <div class="d-label"><i class="fas fa-align-left"></i> Mensaje</div>
+          <div class="d-val msg">${esc(i.message || "")}</div>
+        </div>
+        <div class="d-block">
+          <div class="d-label"><i class="fas fa-image"></i> Imagenes (${i.images?.length || 0})</div>
+          <div class="d-val">${i.images?.length ? i.images.map(u => `<a href="${esc(u)}" target="_blank">${esc(u)}</a>`).join("<br>") : "Ninguna"}</div>
+        </div>
+        <div class="d-block">
+          <div class="d-label"><i class="fas fa-music"></i> Musica</div>
+          <div class="d-val">${i.musicUrl ? `<a href="${esc(i.musicUrl)}" target="_blank">${esc(i.musicUrl)}</a>` : "Ninguna"}</div>
+        </div>
+        <div class="d-link-box">
+          <div class="d-label"><i class="fas fa-link"></i> Link de acceso</div>
+          <a href="${location.origin}/index.html?id=${i.id}" target="_blank">${location.origin}/index.html?id=${i.id}</a>
+        </div>`;
+      om("ovView");
+    };
+
+    /* ---- EDIT ---- */
+    window.editItem = function(id) {
+      const i = window.__items.find(x => x.id === id);
+      if (!i) return;
+      window.__editId = id;
+      document.getElementById("eTitle").value = i.title || "";
+      document.getElementById("eMsg").value = i.message || "";
+      document.getElementById("eImg").value = (i.images || []).join(", ");
+      document.getElementById("eMusic").value = i.musicUrl || "";
+      om("ovEdit");
+    };
+
+    document.getElementById("saveBtn").addEventListener("click", async function() {
+      const id = window.__editId;
+      if (!id) return;
+      const data = {
+        title: document.getElementById("eTitle").value.trim(),
+        message: document.getElementById("eMsg").value.trim(),
+        images: document.getElementById("eImg").value.split(",").map(s => s.trim()).filter(Boolean),
+        musicUrl: document.getElementById("eMusic").value.trim(),
+        updatedAt: serverTimestamp()
+      };
+      if (!data.message) { toast("El mensaje no puede estar vacio", "error"); return; }
+      // Mostrar loading 2 segundos
+      document.getElementById("editProc").classList.add("active");
+      try {
+        await updateDoc(doc(db, "messages", id), data);
+      } catch(e) { toast("Error: " + e.message, "error"); }
+      setTimeout(() => {
+        document.getElementById("editProc").classList.remove("active");
+        cm("ovEdit");
+        doLoadData();
+        toast("Guardado correctamente", "success");
+      }, 2000);
+    });
+
+    /* ---- DELETE ---- */
+    window.askDel = function(id) {
+      window.__delId = id;
+      document.getElementById("delProc").classList.remove("active");
+      om("ovDel");
+    };
+
+    document.getElementById("confirmDelBtn").addEventListener("click", async function() {
+      const id = window.__delId;
+      if (!id) return;
+      document.getElementById("delProc").classList.add("active");
+      try {
+        await deleteDoc(doc(db, "messages", id));
+        window.__items = window.__items.filter(x => x.id !== id);
+        renderList();
+      } catch(e) { toast("Error: " + e.message, "error"); }
+      setTimeout(() => {
+        document.getElementById("delProc").classList.remove("active");
+        cm("ovDel");
+        toast("Eliminado correctamente", "success");
+      }, 2000);
+      window.__delId = null;
+    });
+
+    /* ---- UTILS ---- */
+    window.copyLnk = function(id) {
+      navigator.clipboard.writeText(`${location.origin}/index.html?id=${id}`).then(() => toast("Link copiado", "info")).catch(() => toast("No se pudo copiar", "error"));
+    };
+
+    window.doAskLogout = function() { closeSettings(); om("ovLogout"); };
+
+    document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+      localStorage.removeItem("bmc_admin");
+      location.reload();
+    });
+
+    window.doOpenSettings = function() { closeSettings(); om("ovSettings"); };
+
+    window.doExport = function() {
+      const data = { exportDate: new Date().toISOString(), messages: window.__items.map(m => ({...m, createdAt: m.createdAt?.toDate?.toISOString() || null})) };
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `bermatcode-${new Date().toISOString().split("T")[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast("Datos exportados", "success");
+      closeSettings();
+    };
+
+    function esc(t) { const d = document.createElement("div"); d.textContent = t || ""; return d.innerHTML; }
+
+    window.om = function(id) { document.getElementById(id).classList.add("on"); };
+    window.cm = function(id) { document.getElementById(id).classList.remove("on"); };
+
+    window.toast = function(msg, type) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = "toast show";
+      if (type) el.classList.add("t" + type[0]);
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove("show"), 2800);
+    };
+
+    document.getElementById("searchInput").addEventListener("input", () => renderList());
+    document.getElementById("loginPw").addEventListener("keydown", e => { if (e.key === "Enter") window.__doLogin(); });
+    document.getElementById("loginBtn").addEventListener("click", window.__doLogin);
+    document.querySelectorAll(".ov").forEach(ov => { ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("on"); }); });
+
+    const setBtn = document.getElementById("setBtn");
+    const setDrop = document.getElementById("setDrop");
+    setBtn.addEventListener("click", e => { e.stopPropagation(); setDrop.classList.toggle("open"); });
+    document.addEventListener("click", e => { if (!setDrop.contains(e.target) && e.target !== setBtn) setDrop.classList.remove("open"); });
+    window.closeSettings = function() { setDrop.classList.remove("open"); };
+
+    setInterval(() => { if (localStorage.getItem("bmc_admin") === "1") doLoadData(); }, 5000);
+
+    checkSession();
+    document.getElementById("loader").classList.add("hide");
+  </script>
+</body>
+</html>
