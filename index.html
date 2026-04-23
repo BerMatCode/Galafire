@@ -9,11 +9,11 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    body {
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
       font-family: 'Dancing Script', cursive;
       background: url('https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello%20kitty%20Fondo.jpg') center/cover no-repeat fixed;
-      height: 100vh; overflow-x: hidden; position: relative; color: white;
-      touch-action: manipulation;
+      position: relative; color: white; touch-action: manipulation;
     }
     body::before {
       content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -27,39 +27,40 @@
       cursor: pointer; z-index: 1000; background: rgba(0,0,0,0.3); border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); transition: 0.3s;
     }
-    #menu-btn:hover { background: rgba(255,20,147,0.4); }
+    #menu-btn:hover { background: rgba(255,20,147,0.4); transform: scale(1.05); }
     #menu-btn span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
     #menu-btn.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
     #menu-btn.active span:nth-child(2) { opacity: 0; }
     #menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
     #menu-panel {
-      position: fixed; top: 0; right: -300px; width: 260px; height: 100vh;
-      background: #ffffff; color: #333; padding: 70px 20px 20px; z-index: 999;
-      box-shadow: -5px 0 20px rgba(0,0,0,0.3); transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+      position: fixed; top: 0; right: -280px; width: 240px; height: 100vh;
+      background: #ffffff; color: #333; padding: 65px 18px 18px; z-index: 999;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.35); transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
       font-family: 'Roboto', sans-serif;
     }
     #menu-panel.active { right: 0; }
     
     #menu-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 998; display: none; transition: opacity 0.3s;
+      background: rgba(0,0,0,0.5); z-index: 998; display: none; opacity: 0; transition: opacity 0.3s;
     }
-    #menu-overlay.active { display: block; }
+    #menu-overlay.active { display: block; opacity: 1; }
 
     .menu-title {
-      font-size: 1.2rem; font-weight: 700; color: #ff1493;
-      border-bottom: 2px solid #ff69b4; padding-bottom: 12px; margin-bottom: 15px; text-align: center;
+      font-size: 1.15rem; font-weight: 700; color: #ff1493;
+      border-bottom: 2px solid #ff69b4; padding-bottom: 10px; margin-bottom: 12px; text-align: center;
     }
     .menu-item {
-      font-size: 0.9rem; padding: 10px 15px; margin: 4px 0; border-radius: 8px;
-      background: #fff0f5; display: flex; align-items: center; gap: 10px;
-      color: #555; font-weight: 500;
+      font-size: 0.88rem; padding: 9px 14px; margin: 3px 0; border-radius: 8px;
+      background: #fff0f5; display: flex; align-items: center; gap: 9px;
+      color: #555; font-weight: 500; transition: 0.2s;
     }
-    .menu-item i { color: #ff69b4; font-size: 1rem; width: 24px; text-align: center; }
+    .menu-item:hover { background: #ffe6f2; transform: translateX(-4px); }
+    .menu-item i { color: #ff69b4; font-size: 1rem; width: 22px; text-align: center; }
     .dev-info {
-      font-size: 0.85rem; color: #777; text-align: center; margin-top: 20px;
-      padding-top: 15px; border-top: 1px dashed #ffb6c1;
+      font-size: 0.82rem; color: #777; text-align: center; margin-top: 18px;
+      padding-top: 14px; border-top: 1px dashed #ffb6c1; line-height: 1.4;
     }
     .dev-info strong { color: #ff1493; }
 
@@ -67,178 +68,314 @@
     #battery-indicator {
       position: absolute; top: 15px; left: 15px; display: flex; align-items: center; gap: 6px;
       background: rgba(0, 0, 0, 0.35); padding: 5px 10px; border-radius: 20px;
-      font-family: 'Roboto Mono', monospace; font-size: 0.75rem; z-index: 100;
+      font-family: 'Roboto Mono', monospace; font-size: 0.72rem; z-index: 100;
       border: 1px solid rgba(255, 255, 255, 0.15); pointer-events: none;
     }
-    .battery-icon { position: relative; width: 18px; height: 10px; border: 1.5px solid #fff; border-radius: 2px; display: flex; align-items: center; padding: 1px; }
+    .battery-icon { position: relative; width: 17px; height: 9px; border: 1.3px solid #fff; border-radius: 2px; display: flex; align-items: center; padding: 1px; }
     .battery-icon::after { content: ''; position: absolute; right: -3px; width: 2px; height: 4px; background: #fff; border-radius: 0 2px 2px 0; }
     .battery-level { height: 100%; background: #4ade80; border-radius: 1px; transition: width 0.3s ease; }
     .battery-level.low { background: #f87171; } .battery-level.medium { background: #fbbf24; }
-    .charging-icon { font-size: 0.8rem; color: #fbbf24; display: none; }
+    .charging-icon { font-size: 0.75rem; color: #fbbf24; display: none; }
     .charging-icon.active { display: inline-block; animation: pulse 0.6s infinite; }
     @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.9);} }
 
-    /* === 💌 Panel de Personalización === */
+    /* === 💌 Panel de Personalización (Compacto y Centrado) === */
     #custom-panel {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center;
-      z-index: 2000; padding: 20px;
+      z-index: 2000; padding: 15px;
     }
     #custom-panel.hidden { display: none; }
     
     .custom-box {
-      background: linear-gradient(135deg, #fff0f5, #ffe6f2);
-      border-radius: 20px; padding: 25px; width: 100%; max-width: 520px;
-      box-shadow: 0 10px 40px rgba(255,105,180,0.4);
+      background: linear-gradient(145deg, rgba(255,240,245,0.95), rgba(255,230,242,0.95));
+      border-radius: 22px; padding: 20px 18px; width: 100%; max-width: 420px;
+      box-shadow: 0 15px 50px rgba(255,105,180,0.5), 0 0 0 2px rgba(255,105,180,0.3);
       border: 2px solid #ff69b4; color: #333;
-      font-family: 'Roboto', sans-serif; max-height: 95vh; overflow-y: auto;
+      font-family: 'Roboto', sans-serif; 
+      max-height: 92vh; overflow-y: auto;
+      animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
     }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    
+    .custom-box::-webkit-scrollbar { width: 6px; }
+    .custom-box::-webkit-scrollbar-track { background: rgba(255,105,180,0.1); border-radius: 10px; }
+    .custom-box::-webkit-scrollbar-thumb { background: #ff69b4; border-radius: 10px; }
+    
     .custom-title {
-      font-size: 1.5rem; font-weight: 700; color: #ff1493;
-      text-align: center; margin-bottom: 20px; font-family: 'Pacifico', cursive;
+      font-size: 1.35rem; font-weight: 700; color: #ff1493;
+      text-align: center; margin-bottom: 16px; font-family: 'Pacifico', cursive;
+      text-shadow: 0 0 10px rgba(255,105,180,0.4);
     }
-    .form-group { margin-bottom: 15px; }
+    
+    .form-grid { display: grid; gap: 12px; }
+    .form-group { margin-bottom: 2px; }
     .form-group label {
-      display: block; font-weight: 500; margin-bottom: 5px; color: #555;
-      font-size: 0.95rem;
+      display: block; font-weight: 500; margin-bottom: 4px; color: #555;
+      font-size: 0.9rem; display: flex; align-items: center; gap: 5px;
     }
+    .form-group label i { color: #ff69b4; }
+    
     .form-group input, .form-group textarea {
-      width: 100%; padding: 10px 12px; border: 2px solid #ffb6c1;
-      border-radius: 10px; font-size: 0.95rem; background: #fff;
-      font-family: 'Roboto', sans-serif; transition: 0.2s;
+      width: 100%; padding: 9px 11px; border: 1.5px solid #ffb6c1;
+      border-radius: 10px; font-size: 0.92rem; background: #fff;
+      font-family: 'Roboto', sans-serif; transition: 0.25s;
     }
     .form-group input:focus, .form-group textarea:focus {
-      outline: none; border-color: #ff1493; box-shadow: 0 0 0 3px rgba(255,20,147,0.2);
+      outline: none; border-color: #ff1493; 
+      box-shadow: 0 0 0 4px rgba(255,20,147,0.15), 0 4px 12px rgba(255,105,180,0.2);
+      transform: translateY(-1px);
     }
-    .form-group textarea { min-height: 130px; resize: vertical; }
+    .form-group textarea { min-height: 90px; resize: vertical; line-height: 1.4; }
+    
     .form-hint {
-      font-size: 0.8rem; color: #888; margin-top: 4px; display: block;
+      font-size: 0.75rem; color: #888; margin-top: 3px; display: block;
+      padding-left: 2px;
     }
     
-    .image-inputs { display: flex; flex-direction: column; gap: 8px; }
-    .image-inputs input { font-size: 0.85rem; padding: 8px 10px; }
+    .image-inputs { display: flex; flex-direction: column; gap: 6px; }
+    .image-inputs input { font-size: 0.82rem; padding: 7px 9px; }
     
-    .music-input { margin-bottom: 15px; }
-    .music-input input { font-size: 0.9rem; }
+    .music-input { margin-top: 4px; }
+    .music-input input { font-size: 0.85rem; }
     
+    /* === Botones con Efectos === */
     .btn {
-      width: 100%; padding: 12px; background: linear-gradient(135deg, #ff1493, #ff69b4);
-      color: white; border: none; border-radius: 12px; font-size: 1.05rem;
-      font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 5px;
-      font-family: 'Roboto', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 11px; 
+      background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
+      background-size: 200% 200%;
+      color: white; border: none; border-radius: 12px; 
+      font-size: 1rem; font-weight: 600; cursor: pointer; 
+      transition: all 0.3s ease; margin-top: 8px;
+      font-family: 'Roboto', sans-serif; 
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 15px rgba(255,20,147,0.4);
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,20,147,0.5); }
-    .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    .btn::before {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    .btn:hover::before { left: 100%; }
+    .btn:hover { 
+      background-position: right center; 
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 25px rgba(255,20,147,0.6);
+    }
+    .btn:active { transform: translateY(0) scale(0.98); }
+    .btn:disabled { 
+      background: #ddd; cursor: not-allowed; transform: none; 
+      box-shadow: none; animation: none;
+    }
     
     .btn-secondary {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+      background-size: 200% 200%;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    }
+    .btn-secondary:hover {
+      background-position: right center;
+      box-shadow: 0 6px 25px rgba(102,126,234,0.6);
     }
     
     .loading {
-      text-align: center; padding: 20px; color: #ff1493; font-weight: 500;
+      text-align: center; padding: 18px; color: #ff1493; font-weight: 500;
+      animation: fadeIn 0.3s;
     }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
-    /* === ✅ Ventana de Éxito === */
+    /* === ✅ Modal de Éxito (Centrado y Animado) === */
+    .success-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2100; padding: 20px;
+      animation: fadeOverlay 0.3s ease;
+    }
+    @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
+    
     .success-modal {
-      background: linear-gradient(135deg, #d4edda, #c3e6cb);
-      border: 2px solid #28a745; border-radius: 16px;
-      padding: 20px; text-align: center; color: #155724;
-      margin-top: 15px; animation: slideUp 0.3s ease;
+      background: linear-gradient(145deg, #ffffff, #fff5f8);
+      border: 3px solid #28a745; border-radius: 24px;
+      padding: 24px 20px; width: 100%; max-width: 380px;
+      text-align: center; color: #155724;
+      box-shadow: 0 20px 60px rgba(40,167,69,0.4), 0 0 0 4px rgba(40,167,69,0.15);
+      animation: modalPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+      position: relative;
     }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes modalPop { 
+      0% { opacity: 0; transform: scale(0.7) translateY(30px); }
+      50% { transform: scale(1.05) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
     
-    .success-modal i { font-size: 2.5rem; color: #28a745; margin-bottom: 10px; }
-    .success-modal p { font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px; }
-    .success-modal strong { color: #ff1493; }
+    .success-modal::before {
+      content: '✨'; position: absolute; top: -15px; left: 50%; 
+      transform: translateX(-50%); font-size: 2rem; animation: float 2s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-8px);} }
+    
+    .success-icon {
+      width: 70px; height: 70px; background: linear-gradient(135deg, #28a745, #20c997);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 15px; box-shadow: 0 8px 25px rgba(40,167,69,0.5);
+      animation: pulseSuccess 1.5s infinite;
+    }
+    @keyframes pulseSuccess { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+    .success-icon i { font-size: 2rem; color: white; }
+    
+    .success-modal h3 {
+      font-size: 1.15rem; font-weight: 700; color: #ff1493;
+      margin-bottom: 8px; font-family: 'Pacifico', cursive;
+    }
+    .success-modal p { 
+      font-size: 0.92rem; line-height: 1.45; margin-bottom: 14px; color: #333;
+    }
+    .success-modal strong { color: #ff1493; font-weight: 600; }
     
     .share-url-box {
-      background: #fff; padding: 10px; border-radius: 8px;
-      margin: 10px 0; word-break: break-all; font-size: 0.85rem;
-      border: 1px dashed #28a745; text-align: left;
+      background: linear-gradient(135deg, #f8f9fa, #fff);
+      padding: 11px 13px; border-radius: 10px;
+      margin: 12px 0; word-break: break-all; font-size: 0.83rem;
+      border: 2px dashed #28a745; text-align: left;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+      font-family: 'Roboto Mono', monospace;
     }
     
     .action-buttons {
-      display: flex; flex-direction: column; gap: 8px; margin-top: 15px;
+      display: flex; flex-direction: column; gap: 9px; margin-top: 16px;
     }
     
     .copy-btn {
-      background: #6c757d; color: white; border: none; padding: 10px;
-      border-radius: 10px; cursor: pointer; font-size: 0.95rem;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: 0.2s;
+      background: linear-gradient(135deg, #6c757d, #5a6268);
+      color: white; border: none; padding: 10px 14px;
+      border-radius: 11px; cursor: pointer; font-size: 0.93rem;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.25s; font-weight: 500;
+      box-shadow: 0 3px 12px rgba(108,117,125,0.3);
     }
-    .copy-btn:hover { background: #5a6268; }
+    .copy-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 5px 18px rgba(108,117,125,0.5);
+      background: linear-gradient(135deg, #5a6268, #6c757d);
+    }
     
     .view-btn {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white; border: none; padding: 12px; border-radius: 10px;
-      cursor: pointer; font-size: 1rem; font-weight: 600;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: 0.3s;
+      background: linear-gradient(135deg, #28a745, #20c997, #28a745);
+      background-size: 200% 200%;
+      color: white; border: none; padding: 12px 16px; 
+      border-radius: 12px; cursor: pointer; font-size: 1.02rem; 
+      font-weight: 600; display: flex; align-items: center; 
+      justify-content: center; gap: 8px; transition: all 0.3s;
+      box-shadow: 0 5px 20px rgba(40,167,69,0.45);
+      position: relative; overflow: hidden;
     }
-    .view-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(40,167,69,0.4); }
+    .view-btn::before {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transition: left 0.5s;
+    }
+    .view-btn:hover::before { left: 100%; }
+    .view-btn:hover { 
+      background-position: right center;
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 30px rgba(40,167,69,0.65);
+    }
 
-    /* === 💌 Mensaje Principal === */
+    /* === 💌 Mensaje Principal (SIN SCROLL) === */
     .message-box {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(4px);
-      border-radius: 16px; padding: 18px 16px; text-align: center;
-      box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);
-      z-index: 10; max-width: 85%; width: 80vw;
+      position: absolute; top: 50%; left: 50%; 
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.42); backdrop-filter: blur(5px);
+      border-radius: 18px; padding: 20px 18px; text-align: center;
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.6), 0 0 0 2px rgba(255,255,255,0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      z-index: 10; max-width: 90%; width: 85vw;
+      max-height: 78vh; overflow: hidden;
     }
     .title {
-      font-size: 2rem; font-weight: bold; margin-bottom: 10px;
-      text-shadow: 0 0 10px #ff69b4; color: #fff; font-family: 'Pacifico', cursive;
-      animation: glow 2s infinite alternate;
+      font-size: 1.9rem; font-weight: bold; margin-bottom: 12px;
+      text-shadow: 0 0 12px #ff69b4, 0 0 25px #ff1493; 
+      color: #fff; font-family: 'Pacifico', cursive;
+      animation: glow 2.5s infinite alternate;
+      line-height: 1.2;
     }
-    @keyframes glow { from { text-shadow: 0 0 5px #fff, 0 0 10px #ff69b4; } to { text-shadow: 0 0 15px #fff, 0 0 25px #ff69b4; } }
-    .message { font-size: 1.2rem; line-height: 1.5; color: #fff; text-shadow: 0 0 4px #000; white-space: pre-line; }
+    @keyframes glow { 
+      from { text-shadow: 0 0 8px #fff, 0 0 15px #ff69b4, 0 0 25px #ff1493; } 
+      to { text-shadow: 0 0 18px #fff, 0 0 30px #ff69b4, 0 0 50px #ff1493; } 
+    }
+    .message { 
+      font-size: 1.15rem; line-height: 1.55; color: #fff; 
+      text-shadow: 0 0 5px #000; white-space: pre-line;
+      max-height: 55vh; overflow-y: auto; padding-right: 4px;
+    }
+    .message::-webkit-scrollbar { width: 5px; }
+    .message::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    .message::-webkit-scrollbar-thumb { background: rgba(255,105,180,0.7); border-radius: 10px; }
     
     /* 🎂 Tarta en esquina */
     .corner-cake {
-      position: absolute; top: -10px; right: -10px; width: 60px; height: auto; z-index: 11;
+      position: absolute; top: -8px; right: -8px; width: 55px; height: auto; z-index: 11;
       animation: bounce 2.2s ease-in-out infinite;
     }
-    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
     /* === 👨‍🚀 Astronauta === */
     #follower-astronaut {
-      position: absolute; width: 70px; height: auto; pointer-events: none; z-index: 15;
-      filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.8));
+      position: absolute; width: 68px; height: auto; pointer-events: none; z-index: 15;
+      filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.85));
+      transition: transform 0.1s ease-out;
     }
     
     /* === ✨ Chispas === */
     .spark {
       position: absolute; border-radius: 50%; pointer-events: none; z-index: 14;
       background: radial-gradient(circle, #fff 0%, #ff69b4 40%, transparent 70%);
-      box-shadow: 0 0 6px #ff69b4; animation: sparkFade 0.7s ease-out forwards;
+      box-shadow: 0 0 8px #ff69b4, 0 0 15px #ff1493; 
+      animation: sparkFade 0.8s ease-out forwards;
     }
-    @keyframes sparkFade { 0%{transform:scale(1.2);opacity:1;} 100%{transform:scale(0);opacity:0;} }
+    @keyframes sparkFade { 
+      0%{transform:scale(1.3);opacity:1;} 
+      100%{transform:scale(0);opacity:0;} 
+    }
 
     /* === 🖼️ Imágenes Flotantes === */
     .floating-img {
       position: absolute; pointer-events: none; z-index: 2; opacity: 0;
       animation: floatUp linear forwards;
+      filter: drop-shadow(0 2px 8px rgba(255,105,180,0.5));
     }
     @keyframes floatUp {
-      0% { transform: translateY(110vh) scale(0.8); opacity: 0; }
-      10% { opacity: 0.8; } 100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+      0% { transform: translateY(110vh) scale(0.7) rotate(-10deg); opacity: 0; }
+      10% { opacity: 0.9; } 
+      100% { transform: translateY(-25vh) scale(1.1) rotate(10deg); opacity: 0; }
     }
 
     /* === 𖤍 Créditos === */
     .credits {
-      position: absolute; bottom: 70px; width: 100%; text-align: center;
-      font-family: 'Pacifico', cursive; font-size: 0.9rem; color: white;
-      text-shadow: 0 0 5px #ff66ff, 0 0 10px #ff66ff; z-index: 20; pointer-events: none;
+      position: absolute; bottom: 65px; width: 100%; text-align: center;
+      font-family: 'Pacifico', cursive; font-size: 0.88rem; color: white;
+      text-shadow: 0 0 6px #ff66ff, 0 0 14px #ff66ff, 0 0 25px #ff1493; 
+      z-index: 20; pointer-events: none;
+      animation: creditGlow 3s ease-in-out infinite;
     }
+    @keyframes creditGlow { 0%,100%{opacity:1;} 50%{opacity:0.85;} }
 
-    @media (max-width: 768px) {
-      .message-box { padding: 14px 12px; }
-      .title { font-size: 1.6rem; } .message { font-size: 1rem; }
-      #follower-astronaut { width: 50px; } .corner-cake { width: 45px; }
-      .custom-box { padding: 20px 15px; }
-      .action-buttons { flex-direction: column; }
+    /* === Responsive === */
+    @media (max-width: 480px) {
+      .custom-box { padding: 18px 15px; max-width: 360px; }
+      .custom-title { font-size: 1.25rem; }
+      .form-group input, .form-group textarea { font-size: 0.9rem; padding: 8px 10px; }
+      .message-box { padding: 16px 14px; width: 92vw; }
+      .title { font-size: 1.65rem; } 
+      .message { font-size: 1.05rem; max-height: 50vh; }
+      #follower-astronaut { width: 52px; } 
+      .corner-cake { width: 42px; }
+      .success-modal { max-width: 340px; padding: 20px 16px; }
     }
   </style>
 </head>
@@ -250,14 +387,12 @@
   </div>
   <div id="menu-overlay" onclick="toggleMenu()"></div>
   <div id="menu-panel">
-    <div class="menu-title">⚙️ Información</div>
-    <div class="menu-item"><i class="fas fa-code"></i> Desarrollado por BerMatCode</div>
-    <div class="menu-item"><i class="fas fa-gift"></i> Este proyecto es gratuito</div>
-    <div class="menu-item"><i class="fas fa-heart"></i> Hecho con 💖 para ti</div>
+    <div class="menu-title">⚙️ Info</div>
+    <div class="menu-item"><i class="fas fa-code"></i> BerMatCode</div>
+    <div class="menu-item"><i class="fas fa-gift"></i> Proyecto gratuito</div>
+    <div class="menu-item"><i class="fas fa-heart"></i> Hecho con 💖</div>
     <div class="dev-info">
-      <strong>BerMatCode</strong><br>
-      © 2026 • Todos los derechos reservados<br>
-      <small>Proyecto open-source</small>
+      <strong>BerMatCode</strong><br>© 2026 • Open Source
     </div>
   </div>
 
@@ -268,78 +403,77 @@
     <i class="fas fa-bolt charging-icon" id="charging-icon"></i>
   </div>
 
-  <!-- === 💌 Panel de Personalización (Se muestra primero) === -->
+  <!-- === 💌 Panel de Personalización === -->
   <div id="custom-panel">
     <div class="custom-box">
-      <div class="custom-title">✨ Personaliza tu Mensaje ✨</div>
+      <div class="custom-title">✨ Personaliza ✨</div>
       
-      <div class="form-group">
-        <label for="custom-title">🎀 Título de tu carta:</label>
-        <input type="text" id="custom-title" placeholder="Ej: 💘Mi Yorchi💖" maxlength="60"
-          value="💘Mi Yorchi💖">
-        <small class="form-hint">💡 Puedes editar o dejar el texto por defecto</small>
-      </div>
-      
-      <div class="form-group">
-        <label for="custom-message">💌 Tu mensaje especial:</label>
-        <textarea id="custom-message" placeholder="Escribe aquí tu mensaje de amor...">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="custom-title"><i class="fas fa-heading"></i> Título:</label>
+          <input type="text" id="custom-title" maxlength="55"
+            value="💘Mi Yorchi💖">
+        </div>
+        
+        <div class="form-group">
+          <label for="custom-message"><i class="fas fa-comment-heart"></i> Mensaje:</label>
+          <textarea id="custom-message" maxlength="800">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
 
 Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
 
 Te amo muchísimo mi amorsita💖</textarea>
-        <small class="form-hint">💡 Edita o conserva el mensaje preescrito</small>
-      </div>
-      
-      <div class="form-group">
-        <label>🖼️ Imágenes flotantes (URLs - opcional):</label>
-        <div class="image-inputs">
-          <input type="url" id="img1" placeholder="URL imagen 1" 
-            value="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png">
-          <input type="url" id="img2" placeholder="URL imagen 2" value="">
-          <input type="url" id="img3" placeholder="URL imagen 3" value="">
         </div>
-        <small class="form-hint">* Deja vacío para usar solo la imagen por defecto</small>
-      </div>
-      
-      <div class="form-group music-input">
-        <label>🎵 Música de fondo (URL MP3 - opcional):</label>
-        <input type="url" id="music-url" placeholder="URL de tu canción MP3"
-          value="https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3">
-        <small class="form-hint">* Deja vacío para usar la música por defecto</small>
+        
+        <div class="form-group">
+          <label><i class="fas fa-images"></i> Imágenes (URLs):</label>
+          <div class="image-inputs">
+            <input type="url" id="img1" placeholder="Imagen 1" 
+              value="https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png">
+            <input type="url" id="img2" placeholder="Imagen 2 (opcional)">
+            <input type="url" id="img3" placeholder="Imagen 3 (opcional)">
+          </div>
+        </div>
+        
+        <div class="form-group music-input">
+          <label><i class="fas fa-music"></i> Música (MP3 URL):</label>
+          <input type="url" id="music-url"
+            value="https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3">
+        </div>
       </div>
       
       <button class="btn" id="generate-btn" onclick="generateLink()">
-        <i class="fas fa-magic"></i> Generar mi Link Personalizado
+        <i class="fas fa-wand-magic-sparkles"></i> Generar Link
       </button>
       
       <div id="loading" class="loading" style="display:none;">
-        <i class="fas fa-spinner fa-spin"></i> Creando tu link mágico...
-      </div>
-      
-      <!-- === ✅ Ventana de Éxito === -->
-      <div id="success" style="display:none;">
-        <div class="success-modal">
-          <i class="fas fa-check-circle"></i>
-          <p><strong>¡Tu detalle ha sido generado con éxito!</strong><br>
-          Ya está registrado en nuestra base de datos de <strong>BerMatCode</strong> 💾✨</p>
-          
-          <div style="font-weight:500;margin:10px 0 5px;">🔗 Tu link para compartir:</div>
-          <div class="share-url-box" id="share-url"></div>
-          
-          <div class="action-buttons">
-            <button class="copy-btn" onclick="copyLink()">
-              <i class="fas fa-copy"></i> Copiar Link
-            </button>
-            <button class="view-btn" onclick="viewMyPage()">
-              <i class="fas fa-eye"></i> Ver mi Página
-            </button>
-          </div>
-        </div>
+        <i class="fas fa-spinner fa-spin"></i> Creando magia... ✨
       </div>
     </div>
   </div>
 
-  <!-- === 💌 Mensaje Principal (Se muestra después) === -->
+  <!-- === ✅ Modal de Éxito (Oculto inicialmente) === -->
+  <div id="success-modal" class="success-overlay" style="display:none;">
+    <div class="success-modal">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <h3>¡Éxito Total! 💕</h3>
+      <p><strong>Tu detalle ha sido generado con éxito</strong><br>
+      Ya está registrado en nuestra base de datos de <strong>BerMatCode</strong> 💾✨</p>
+      
+      <div style="font-weight:600;margin:8px 0 4px;color:#555;">🔗 Tu link:</div>
+      <div class="share-url-box" id="share-url"></div>
+      
+      <div class="action-buttons">
+        <button class="copy-btn" onclick="copyLink()">
+          <i class="fas fa-copy"></i> Copiar Link
+        </button>
+        <button class="view-btn" onclick="viewMyPage()">
+          <i class="fas fa-eye"></i> Ver mi Página
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === 💌 Mensaje Principal === -->
   <div class="message-box" id="main-message" style="display:none;">
     <div class="title" id="display-title">💘Mi Yorchi💖</div>
     <div class="message" id="display-message">Te amo muchísimo mi bebé . No hay distancia ni tiempo que cambie lo que siento por ti, porque tú eres mi todo, mi goldita hermosa. Desde que llegaste a mi vida, todo es más bonito y especial.
@@ -347,24 +481,23 @@ Te amo muchísimo mi amorsita💖</textarea>
 Siempre estás en mi mente y en mi corazón, y no importa lo lejos que estemos, lo nuestro es fuerte y sincero. Eres lo mejor que tengo.
 
 Te amo muchísimo mi amorsita💖</div>
-    <img src="https://i.postimg.cc/7P2vYZFL/1760657847691-removebg-preview.png" class="corner-cake" alt="Tarta">
+    <img src="https://i.postimg.cc/7P2vYZFL/1760657847691-removebg-preview.png" class="corner-cake" alt="🎂">
   </div>
 
   <!-- === Créditos === -->
   <div class="credits">𖤍 BerMat-Code 𖤍</div>
 
   <!-- === 👨‍🚀 Astronauta === -->
-  <img id="follower-astronaut" src="https://i.postimg.cc/vHFJ1dyW/1760657793625-removebg-preview.png" alt="Astronauta">
+  <img id="follower-astronaut" src="https://i.postimg.cc/vHFJ1dyW/1760657793625-removebg-preview.png" alt="🚀">
 
-  <!-- === Audio === -->
+  <!-- === Audio (NO se reproduce en el panel) === -->
   <audio id="bg-music" preload="auto" loop></audio>
 
-  <!-- === Firebase SDK (Modular) === -->
+  <!-- === Firebase SDK === -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDbciIRfI7X3srvZylbR0a93z8CyVBN-kU",
       authDomain: "personalizados-2026.firebaseapp.com",
@@ -374,15 +507,12 @@ Te amo muchísimo mi amorsita💖</div>
       appId: "1:5347756837:web:6c238c8d24d02453bc68cc"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // Variables globales
     window.firebaseDB = db;
     window.generatedMessageId = null;
 
-    // === Cargar mensaje personalizado desde URL ===
+    // === Cargar mensaje desde URL ===
     async function loadCustomMessage() {
       const params = new URLSearchParams(window.location.search);
       const messageId = params.get('id');
@@ -394,37 +524,30 @@ Te amo muchísimo mi amorsita💖</div>
           
           if (docSnap.exists()) {
             const data = docSnap.data();
-            
-            // Aplicar contenido personalizado
             document.getElementById('display-title').textContent = data.title || '💘Mi Yorchi💖';
             document.getElementById('display-message').textContent = data.message || '';
             
-            // Configurar música personalizada
             if (data.musicUrl && data.musicUrl.trim() !== '') {
               document.getElementById('bg-music').src = data.musicUrl;
             }
             
-            // Ocultar panel y mostrar mensaje
             document.getElementById('custom-panel').classList.add('hidden');
             document.getElementById('main-message').style.display = 'block';
             
-            // Configurar imágenes flotantes
             if (data.images && data.images.length > 0) {
               window.customImages = data.images.filter(url => url && url.trim() !== '');
             }
             
-            // Reproducir música
+            // ✅ Música SOLO al ver la página final, no en el panel
             playAudio();
             return true;
           }
-        } catch (error) {
-          console.error("Error cargando mensaje:", error);
-        }
+        } catch (error) { console.error("Error:", error); }
       }
       return false;
     }
 
-    // === Generar link personalizado ===
+    // === Generar Link ===
     window.generateLink = async function() {
       const title = document.getElementById('custom-title').value.trim() || '💘Mi Yorchi💖';
       const message = document.getElementById('custom-message').value.trim();
@@ -435,108 +558,76 @@ Te amo muchísimo mi amorsita💖</div>
         document.getElementById('img3').value.trim()
       ].filter(url => url && url.trim() !== '');
 
-      if (!message) {
-        alert('💌 Por favor, escribe tu mensaje especial');
-        return;
-      }
+      if (!message) { alert('💌 Escribe tu mensaje'); return; }
 
-      // UI: Loading
       document.getElementById('generate-btn').disabled = true;
       document.getElementById('loading').style.display = 'block';
-      document.getElementById('success').style.display = 'none';
 
       try {
-        // Guardar en Firestore
         const docRef = await addDoc(collection(window.firebaseDB, "messages"), {
-          title: title,
-          message: message,
-          images: images,
+          title, message, images,
           musicUrl: musicUrl || 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3',
           createdAt: serverTimestamp()
         });
 
-        // Guardar ID generado
         window.generatedMessageId = docRef.id;
-        
-        // Generar URL compartible
         const shareUrl = `${window.location.origin}${window.location.pathname}?id=${docRef.id}`;
         
-        // Mostrar éxito
         document.getElementById('share-url').textContent = shareUrl;
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('success').style.display = 'block';
+        document.getElementById('success-modal').style.display = 'flex';
         document.getElementById('generate-btn').disabled = false;
         
       } catch (error) {
-        console.error("Error generando link:", error);
-        alert('❌ Error al crear tu link. Intenta de nuevo.');
+        console.error("Error:", error);
+        alert('❌ Error. Intenta de nuevo.');
         document.getElementById('loading').style.display = 'none';
         document.getElementById('generate-btn').disabled = false;
       }
     };
 
-    // === Copiar link ===
     window.copyLink = function() {
       const url = document.getElementById('share-url').textContent;
       navigator.clipboard.writeText(url).then(() => {
-        alert('🔗 Link copiado al portapapeles ✨');
+        alert('🔗 ¡Copiado! ✨');
       }).catch(() => {
-        const textarea = document.createElement('textarea');
-        textarea.value = url;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('🔗 Link copiado');
+        const ta = document.createElement('textarea');
+        ta.value = url; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        alert('🔗 Copiado');
       });
     };
 
-    // === Ver mi página ===
     window.viewMyPage = function() {
       if (window.generatedMessageId) {
-        // Redirigir a la misma página con el ID
         window.location.href = `${window.location.pathname}?id=${window.generatedMessageId}`;
       }
     };
 
-    // Exportar funciones
     window.loadCustomMessage = loadCustomMessage;
   </script>
 
   <script>
-    // === Funciones de UI y efectos ===
-    
+    // === UI y Efectos ===
     window.addEventListener('load', async () => {
       const loaded = await (typeof loadCustomMessage === 'function' ? loadCustomMessage() : false);
-      
       if (!loaded) {
         document.getElementById('custom-panel').classList.remove('hidden');
         document.getElementById('main-message').style.display = 'none';
       }
-      
-      initBattery();
-      startAstronaut();
-      startFloatingImages();
+      initBattery(); startAstronaut(); startFloatingImages();
     });
 
-    // === Audio ===
+    // === Audio (Solo en página final) ===
     const bg = document.getElementById('bg-music');
-    // URL por defecto (se puede sobrescribir desde Firebase)
-    if (!bg.src) {
-      bg.src = 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
-    }
+    if (!bg.src) bg.src = 'https://raw.githubusercontent.com/BerMatMods/Hello-kitty/refs/heads/main/TikVid.io_7289423782995889414%20(1).mp3';
     let audioReady = false;
 
     async function playAudio() {
       if (audioReady) return;
-      try {
-        await bg.load();
-        bg.volume = 0.6;
-        await bg.play();
-        audioReady = true;
-      } catch(e) { /* Autoplay requiere interacción */ }
+      try { await bg.load(); bg.volume = 0.6; await bg.play(); audioReady = true; } 
+      catch(e) {}
     }
-
     document.addEventListener('click', playAudio, { once: true, passive: true });
     document.addEventListener('touchstart', playAudio, { once: true, passive: true });
 
@@ -549,49 +640,35 @@ Te amo muchísimo mi amorsita💖</div>
 
     // === Batería ===
     async function initBattery() {
-      const l = document.getElementById('battery-level');
-      const p = document.getElementById('battery-percent');
-      const c = document.getElementById('charging-icon');
-      
+      const l = document.getElementById('battery-level'), p = document.getElementById('battery-percent'), c = document.getElementById('charging-icon');
       const upd = (lvl, chg) => {
-        const pct = Math.round(lvl * 100);
-        p.textContent = pct + '%';
-        l.style.width = pct + '%';
+        const pct = Math.round(lvl * 100); p.textContent = pct + '%'; l.style.width = pct + '%';
         l.className = 'battery-level ' + (pct <= 20 ? 'low' : pct <= 50 ? 'medium' : 'high');
-        c.classList.toggle('active', chg);
-        c.style.display = chg ? 'inline-block' : 'none';
+        c.classList.toggle('active', chg); c.style.display = chg ? 'inline-block' : 'none';
       };
-
       if ('getBattery' in navigator) {
-        try {
-          const b = await navigator.getBattery();
-          upd(b.level, b.charging);
+        try { const b = await navigator.getBattery(); upd(b.level, b.charging);
           b.addEventListener('levelchange', () => upd(b.level, b.charging));
-          b.addEventListener('chargingchange', () => upd(b.level, b.charging));
-          return;
+          b.addEventListener('chargingchange', () => upd(b.level, b.charging)); return;
         } catch(e) {}
       }
       upd(0.85, false);
     }
 
-    // === Imágenes flotantes ===
+    // === Imágenes Flotantes ===
     let customImages = [];
     function startFloatingImages() {
-      const defaultSrc = "https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png";
-      
+      const def = "https://raw.githubusercontent.com/BerMatCode/Archivos/main/Multimedia/Hello_kitty_2.png";
       setInterval(() => {
         const img = document.createElement('img');
-        const src = customImages.length > 0 
-          ? customImages[Math.floor(Math.random() * customImages.length)]
-          : defaultSrc;
-        img.src = src;
+        img.src = customImages.length > 0 ? customImages[Math.floor(Math.random() * customImages.length)] : def;
         img.className = 'floating-img';
-        img.style.width = (25 + Math.random() * 35) + 'px';
-        img.style.left = (Math.random() * 90) + 'vw';
+        img.style.width = (22 + Math.random() * 32) + 'px';
+        img.style.left = (Math.random() * 92) + 'vw';
         img.style.animationDuration = (5 + Math.random() * 5) + 's';
         document.body.appendChild(img);
         setTimeout(() => img.remove(), 11000);
-      }, 1200);
+      }, 1300);
     }
 
     // === Astronauta + Chispas ===
@@ -600,48 +677,36 @@ Te amo muchísimo mi amorsita💖</div>
     astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
     
     function updatePos(e) {
-      const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : null);
-      const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : null);
-      if (x !== null) {
-        tx = (x / window.innerWidth) * 100;
-        ty = (y / window.innerHeight) * 100;
-      }
+      const x = e.clientX || (e.touches?.[0]?.clientX), y = e.clientY || (e.touches?.[0]?.clientY);
+      if (x != null) { tx = (x / innerWidth) * 100; ty = (y / innerHeight) * 100; }
     }
     document.addEventListener('mousemove', updatePos, {passive:true});
     document.addEventListener('touchmove', updatePos, {passive:true});
 
-    function spark(x, y, dx, dy) {
+    function spark(x,y,dx,dy) {
       const s = document.createElement('div'); s.className='spark';
       const sz = 3 + Math.random()*6;
       s.style.cssText = `width:${sz}px;height:${sz}px;left:${x}px;top:${y}px`;
-      
-      const ang = Math.atan2(dy, dx) + Math.PI + (Math.random()-0.5)*1.5; 
-      const spd = 2 + Math.random()*4;
-      let px=x, py=y, op=1, life=25;
-      
+      const ang = Math.atan2(dy,dx) + Math.PI + (Math.random()-0.5)*1.5, spd = 2 + Math.random()*4;
+      let px=x, py=y, op=1, life=28;
       (function anim(){
-        if(life-- <= 0 || op <= 0){ s.remove(); return; }
-        px += Math.cos(ang)*spd; py += Math.sin(ang)*spd; op -= 0.04;
+        if(life--<=0||op<=0){s.remove();return;}
+        px+=Math.cos(ang)*spd; py+=Math.sin(ang)*spd; op-=0.035;
         s.style.left=px+'px'; s.style.top=py+'px'; s.style.opacity=op;
         requestAnimationFrame(anim);
       })();
     }
 
-    let lastSpark = 0;
+    let lastSpark=0;
     function startAstronaut() {
       function loop() {
-        const dx = tx-ax, dy = ty-ay;
-        ax += dx*0.08; ay += dy*0.08;
-        astro.style.left = ax+'vw'; astro.style.top = ay+'vh';
-        
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const now = performance.now();
-        
-        if(dist > 0.5 && now - lastSpark > 25) {
-          lastSpark = now;
-          const r = astro.getBoundingClientRect();
-          const cx = r.left + r.width/2, cy = r.top + r.height/2;
-          for(let i=0; i<5; i++) spark(cx, cy, dx, dy); 
+        const dx=tx-ax, dy=ty-ay; ax+=dx*0.08; ay+=dy*0.08;
+        astro.style.left=ax+'vw'; astro.style.top=ay+'vh';
+        const dist=Math.sqrt(dx*dx+dy*dy), now=performance.now();
+        if(dist>0.5 && now-lastSpark>22) {
+          lastSpark=now; const r=astro.getBoundingClientRect();
+          const cx=r.left+r.width/2, cy=r.top+r.height/2;
+          for(let i=0;i<5;i++) spark(cx,cy,dx,dy);
         }
         requestAnimationFrame(loop);
       }
