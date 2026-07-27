@@ -459,7 +459,7 @@
   <!-- Panel principal -->
   <div class="panel-container">
     <div class="panel-header">
-      <div class="panel-title">𝗣𝗮𝗻𝗲𝗹 𝗱𝗲 𝗖𝗮𝗿𝘁𝗮</div>
+      <div class="panel-title">PERSONALIZA</div>
       <div class="panel-subtitle">💗Edita los valores💗</div>
     </div>
     <div class="form-scroll">
@@ -470,7 +470,7 @@
       </div>
       <div class="form-group">
         <label for="custom-message"><i class="fas fa-pen-fancy"></i> Tu mensaje especial:</label>
-        <textarea id="custom-message">ㅤ</textarea>
+        <textarea id="custom-message"></textarea>
         <small class="form-hint">Edita los valores</small>
       </div>
       <div class="form-group">
@@ -523,7 +523,7 @@
              onerror="this.src='https://via.placeholder.com/110/ff69b4/ffffff?text=🎀'">
       </div>
       <h3>𝐒𝐢𝐠𝐮𝐞𝐦𝐞 𝐞𝐧 𝐓𝐢𝐤𝐭𝐨𝐤</h3>
-      <p>Para desbloquear tu detalle personalizado, <span class="highlight">sigue mi perfil de TikTok</span> y regresa aquí. ¡Es rápido y gratis! ✨</p>
+      <p>Para desbloquear tu detalle personalizado, <span class="highlight">sigue mi perfil de TikTok</span> y regresa aquí. ¡Es rápido y gratis</p>
       <div class="tiktok-profile">
         <div class="tiktok-avatar">
           <img src="https://raw.githubusercontent.com/BerMatCode/Galafire/main/Multimedia/Screenshot_20260225-092058.jpg" 
@@ -531,15 +531,15 @@
                onerror="this.src='https://via.placeholder.com/70/ff69b4/ffffff?text=🎀'">
         </div>
         <div class="tiktok-info">
-          <div class="tiktok-username">BerMatCode</div>
-          <div class="tiktok-handle">@bermatcode •Desarrollador</div>
+          <div class="tiktok-username">AnthZz Berrocal</div>
+          <div class="tiktok-handle">@anthzz_bm •Desarrollador</div>
         </div>
       </div>
       <button class="btn-tiktok" onclick="followTikTok()">
         <i class="fab fa-tiktok"></i> Seguir en TikTok
       </button>
       <div class="tiktok-note">
-        <i class="fas fa-info-circle"></i> Al hacer clic, se abrirá TikTok. Cuando regreses, tu link estará listo 🌸
+        <i class="fas fa-info-circle"></i> Al hacer clic, se abrirá TikTok. Cuando regreses, tu link estará listo
       </div>
     </div>
   </div>
@@ -594,7 +594,7 @@
     window.firebaseDB = db;
     window.generatedMessageId = null;
     window.tiktokFollowed = false;
-    window.TIKTOK_PROFILE = "https://www.tiktok.com/@bermatcode";
+    window.TIKTOK_PROFILE = "tiktok.com/@anthzz_bm";
     window.DEVELOPER_CONTACT = "https://wa.me/51930569195";
     
     window.generateLink = async function() {
@@ -684,7 +684,7 @@
     window.copyLink = function() {
       const url = document.getElementById('share-url').textContent;
       navigator.clipboard.writeText(url).then(() => {
-        showToast('🔗 Link copiado ✨');
+        showToast('Link copiado');
       }).catch(() => {
         const ta = document.createElement('textarea'); ta.value = url;
         document.body.appendChild(ta); ta.select(); document.execCommand('copy');
